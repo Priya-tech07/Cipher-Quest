@@ -44,3 +44,15 @@
 ## 📜 License
 
 Created as part of the CipherQuest Intelligence Initiative. 🔒
+
+## 📝 Contributing
+
+Contributions are welcome! Please open an issue or submit a pull request.
+
+## 📞 Contact
+
+For any inquiries, please contact us at [cipherquest@cipherquest.com](mailto:cipherquest@cipherquest.com).
+
+## 📅 Version
+
+1.0.0
