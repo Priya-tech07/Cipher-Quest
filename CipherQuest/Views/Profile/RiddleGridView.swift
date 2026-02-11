@@ -1,0 +1,481 @@
+
+import SwiftUI
+
+struct Riddle: Identifiable {
+    let id: Int
+    let question: String
+    let answer: String
+    let xpRequired: Int
+    let label: String
+}
+
+struct RiddleGridView: View {
+    @ObservedObject var viewModel: GameViewModel
+    var level: Int // Added level parameter
+    var onDismiss: () -> Void
+    
+    @State private var selectedRiddle: Riddle?
+    @State private var riddleInput: String = ""
+    @State private var showFeedback = false
+    @State private var feedbackMsg = ""
+    @State private var showBadgeAward = false
+    
+    // Riddles Data based on Level
+    var riddles: [Riddle] {
+        if level == 2 {
+            return [
+                Riddle(id: 5, question: "I am a network of servers that stores data remotely. What am I?", answer: "CLOUD", xpRequired: 500, label: "NETWORK"),
+                Riddle(id: 6, question: "I am the interface that allows applications to talk to each other. What am I?", answer: "API", xpRequired: 550, label: "CONNECT"),
+                Riddle(id: 7, question: "I am the tool that tracks changes in your source code. What am I?", answer: "GIT", xpRequired: 600, label: "VERSION"),
+                Riddle(id: 8, question: "I scramble data so only authorized parties can understand it. What am I?", answer: "ENCRYPTION", xpRequired: 650, label: "SECURITY")
+            ]
+        } else {
+            // Level 1 Default
+            return [
+                Riddle(id: 1, question: "I am the language that styles the web universe. What am I?", answer: "CSS", xpRequired: 0, label: "WEB"),
+                Riddle(id: 2, question: "I am a data structure where the last item in is the first one out. What am I?", answer: "STACK", xpRequired: 50, label: "LOGIC"),
+                Riddle(id: 3, question: "I am the integrated environment where you spend most of your coding hours. What am I?", answer: "IDE", xpRequired: 100, label: "TOOLS"),
+                Riddle(id: 4, question: "I am the heart of the operating system, managing everything. What am I?", answer: "KERNEL", xpRequired: 150, label: "SYSTEM")
+            ]
+        }
+    }
+    
+    var body: some View {
+        ZStack {
+            Color.cryptoDarkBlue.edgesIgnoringSafeArea(.all)
+            
+            VStack(spacing: 20) {
+                // Header
+                HStack {
+                    Button(action: onDismiss) {
+                        Image(systemName: "arrow.left")
+                            .font(.title2)
+                            .foregroundColor(.cryptoText)
+                            .padding(10)
+                            .background(Color.cryptoNavy)
+                            .clipShape(Circle())
+                    }
+                    Spacer()
+                    Text("SECURE RIDDLES")
+                        .font(.system(size: 18, weight: .black, design: .monospaced))
+                        .foregroundColor(.cryptoGreen)
+                    Spacer()
+                    CoinView(amount: viewModel.playerStats.coins)
+                        .scaleEffect(0.8)
+                }
+                .padding(.horizontal)
+                .padding(.top, 10)
+                
+                Text("Decrypt all 4 sectors to assemble the Master Badge.")
+                    .font(.caption)
+                    .foregroundColor(.cryptoSubtext)
+                    .multilineTextAlignment(.center)
+                    .padding(.horizontal)
+                
+                Spacer()
+                
+                // Puzzle Grid (2x2 Container)
+                ZStack {
+                     // Underlying Badge (The Reward)
+                    if level == 2 {
+                        SystemArchitectBadgeView()
+                            .scaleEffect(1.5)
+                            .frame(width: 300, height: 300)
+                    } else {
+                        DeveloperBadgeView()
+                            .scaleEffect(1.5)
+                            .frame(width: 300, height: 300)
+                    }
+                        
+                    // Overlay Cover Grid
+                    VStack(spacing: 0) {
+                        HStack(spacing: 0) {
+                            PuzzlePieceView(
+                                riddle: riddles[0],
+                                quadrant: .topLeft,
+                                isUnlocked: viewModel.playerStats.experience >= riddles[0].xpRequired,
+                                isCompleted: viewModel.playerStats.completedRiddles.contains(riddles[0].id),
+                                action: { handleRiddleTap(riddles[0]) }
+                            )
+                            PuzzlePieceView(
+                                riddle: riddles[1],
+                                quadrant: .topRight,
+                                isUnlocked: viewModel.playerStats.experience >= riddles[1].xpRequired,
+                                isCompleted: viewModel.playerStats.completedRiddles.contains(riddles[1].id),
+                                action: { handleRiddleTap(riddles[1]) }
+                            )
+                        }
+                        HStack(spacing: 0) {
+                            PuzzlePieceView(
+                                riddle: riddles[2],
+                                quadrant: .bottomLeft,
+                                isUnlocked: viewModel.playerStats.experience >= riddles[2].xpRequired,
+                                isCompleted: viewModel.playerStats.completedRiddles.contains(riddles[2].id),
+                                action: { handleRiddleTap(riddles[2]) }
+                            )
+                            PuzzlePieceView(
+                                riddle: riddles[3],
+                                quadrant: .bottomRight,
+                                isUnlocked: viewModel.playerStats.experience >= riddles[3].xpRequired,
+                                isCompleted: viewModel.playerStats.completedRiddles.contains(riddles[3].id),
+                                action: { handleRiddleTap(riddles[3]) }
+                            )
+                        }
+                    }
+                }
+                .padding(4)
+                .background(Color.cryptoNavy.opacity(0.3))
+                .cornerRadius(20)
+                .shadow(color: .black.opacity(0.5), radius: 10, x: 0, y: 5)
+                
+                Spacer()
+                
+                if (level == 1 && viewModel.playerStats.hasDeveloperBadge) || (level == 2 && viewModel.playerStats.hasArchitectBadge) {
+                    Text("BADGE RECOVERED: \(level == 2 ? "SYSTEM ARCHITECT" : "MASTER DEVELOPER")")
+                        .font(.system(size: 12, weight: .bold, design: .monospaced))
+                        .foregroundColor(.cryptoGreen)
+                        .padding()
+                        .background(Color.cryptoNavy.opacity(0.8))
+                        .cornerRadius(10)
+                }
+            }
+            // Mystery Popup Overlay
+            if let riddle = selectedRiddle {
+                mysteryBoxOverlay(for: riddle)
+            }
+            
+            // Completion Animation Overlay
+            if showBadgeAward {
+                badgeAwardOverlay
+            }
+        }
+    }
+    
+    private func handleRiddleTap(_ riddle: Riddle) {
+        if viewModel.playerStats.experience >= riddle.xpRequired {
+            if !viewModel.playerStats.completedRiddles.contains(riddle.id) {
+                withAnimation { selectedRiddle = riddle }
+                riddleInput = ""
+            }
+        }
+    }
+    
+    private func checkAnswer() {
+        guard let riddle = selectedRiddle else { return }
+        
+        if riddleInput.trimmingCharacters(in: .whitespacesAndNewlines).uppercased() == riddle.answer {
+            feedbackMsg = "ACCESS GRANTED: PIECE UNLOCKED"
+            showFeedback = true
+            
+            // Update stats immediately (popup stays open)
+             withAnimation {
+                if !viewModel.playerStats.completedRiddles.contains(riddle.id) {
+                    viewModel.playerStats.completedRiddles.append(riddle.id)
+                    viewModel.playerStats.coins += 50
+                    viewModel.playerStats.experience += 50
+                    
+                    // Check completion inside the same update cycle
+                    let requiredCount = (level == 2) ? 8 : 4 // Total riddles count logic
+                    // Simpler check: check if all current level riddles are done
+                    let levelRiddleIds = riddles.map { $0.id }
+                    let isLevelComplete = levelRiddleIds.allSatisfy { viewModel.playerStats.completedRiddles.contains($0) }
+                    
+                    if isLevelComplete {
+                        if level == 1 && !viewModel.playerStats.hasDeveloperBadge {
+                            viewModel.playerStats.hasDeveloperBadge = true
+                            viewModel.playerStats.experience += 50
+                            // Delay badge award overlay until after user closes reward popup?
+                            // Or show it immediately on top? 
+                            // Better to let them close the reward popup first. 
+                            // Logic: The badge award overlay uses `showBadgeAward`.
+                            // I'll trigger it, but maybe users won't see it if mystery box is top? 
+                            // ZStack order: Mystery Box is on top of Badge Award (lines 143 vs 148 in view_file?).
+                            // Let's check ZStack order.
+                            // Line 142: Mystery Popup.
+                            // Line 148: Badge Award.
+                            // So Badge Award is ON TOP of Mystery Popup.
+                            DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) { showBadgeAward = true }
+                        } else if level == 2 && !viewModel.playerStats.hasArchitectBadge {
+                            viewModel.playerStats.hasArchitectBadge = true
+                            viewModel.playerStats.experience += 100
+                            DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) { showBadgeAward = true }
+                        }
+                    }
+                    UserDefaultsManager.shared.saveStats(viewModel.playerStats)
+                }
+            }
+        } else {
+            feedbackMsg = "ACCESS DENIED: INCORRECT"
+            showFeedback = true
+        }
+    }
+    
+    private func mysteryBoxOverlay(for riddle: Riddle) -> some View {
+        ZStack {
+            Color.black.opacity(0.8).edgesIgnoringSafeArea(.all)
+                .onTapGesture { selectedRiddle = nil }
+            
+            if showFeedback && feedbackMsg.contains("GRANTED") {
+                // Success / Reward View
+                VStack(spacing: 20) {
+                    // Success Icon
+                    ZStack {
+                        Circle()
+                            .fill(Color.blue.opacity(0.1))
+                            .frame(width: 100, height: 100)
+                        Image(systemName: "lock.open.fill")
+                            .font(.system(size: 40))
+                            .foregroundColor(.blue)
+                    }
+                    
+                    Text("ACCESS GRANTED")
+                        .font(.system(size: 22, weight: .black, design: .monospaced))
+                        .foregroundColor(.blue)
+                    
+                    Text("System Integration Complete")
+                        .font(.caption)
+                        .foregroundColor(.gray)
+                    
+                    VStack(spacing: 5) {
+                        Text("DECRYPTED MESSAGE")
+                            .font(.system(size: 10, weight: .bold))
+                            .foregroundColor(.cryptoSubtext)
+                        
+                        Text(riddle.answer)
+                            .font(.system(size: 24, weight: .black, design: .monospaced))
+                            .padding(.horizontal, 20)
+                            .padding(.vertical, 10)
+                            .background(Color.gray.opacity(0.1))
+                            .cornerRadius(10)
+                    }
+                    
+                    // Reward Card
+                    VStack(spacing: 10) {
+                        Text("REWARD")
+                            .font(.system(size: 10, weight: .bold))
+                            .foregroundColor(.gray)
+                        
+                        HStack(spacing: 30) {
+                            VStack {
+                                Image(systemName: "centsign.circle.fill")
+                                    .foregroundColor(.yellow)
+                                    .font(.title2)
+                                Text("+50")
+                                    .font(.system(size: 14, weight: .bold, design: .monospaced))
+                            }
+                            
+                            Divider().frame(height: 30)
+                            
+                            VStack {
+                                Image(systemName: "bolt.fill") // Corrected to Bolt
+                                    .foregroundColor(.orange)
+                                    .font(.title2)
+                                Text("+50")
+                                    .font(.system(size: 14, weight: .bold, design: .monospaced))
+                            }
+                        }
+                    }
+                    .padding()
+                    .background(Color.white.opacity(0.05))
+                    .cornerRadius(15)
+                    
+                    Button(action: {
+                        withAnimation {
+                            selectedRiddle = nil
+                            showFeedback = false
+                        }
+                    }) {
+                        Text("NEXT LEVEL")
+                            .font(.headline)
+                            .foregroundColor(.white)
+                            .frame(maxWidth: .infinity)
+                            .padding()
+                            .background(Color.blue)
+                            .cornerRadius(12)
+                    }
+                    
+                    Button("RETURN TO BASE") {
+                        withAnimation {
+                            selectedRiddle = nil
+                            showFeedback = false
+                            onDismiss()
+                        }
+                    }
+                    .font(.caption)
+                    .foregroundColor(.gray)
+                }
+                .padding(30)
+                .background(Color.cryptoNavy)
+                .cornerRadius(25)
+                .padding(40)
+                .shadow(radius: 20)
+                
+            } else {
+                // Question / Input View
+                VStack(spacing: 25) {
+                    Text("MYSTERY BOX: \(riddle.label)")
+                        .font(.system(size: 16, weight: .black, design: .monospaced))
+                        .foregroundColor(.cryptoPurple)
+                    
+                    Image(systemName: "cube.box.fill")
+                        .font(.system(size: 60))
+                        .foregroundColor(.cryptoGreen)
+                        .padding()
+                        .rotationEffect(.degrees(showFeedback ? 360 : 0))
+                        .animation(showFeedback ? Animation.linear(duration: 1).repeatForever(autoreverses: false) : .default, value: showFeedback)
+                    
+                    Text(riddle.question)
+                        .font(.headline)
+                        .foregroundColor(.black)
+                        .multilineTextAlignment(.center)
+                        .padding()
+                    
+                    TextField("ANSWER", text: $riddleInput)
+                        .font(.system(size: 20, weight: .black, design: .monospaced))
+                        .multilineTextAlignment(.center)
+                        .padding()
+                        .background(Color.gray.opacity(0.1))
+                        .cornerRadius(12)
+                        .foregroundColor(.black)
+                        .accentColor(.cryptoGreen)
+                        .autocapitalization(.allCharacters)
+                        .disableAutocorrection(true)
+                    
+                    if showFeedback {
+                        Text(feedbackMsg)
+                            .font(.caption)
+                            .foregroundColor(feedbackMsg.contains("GRANTED") ? .blue : .cryptoError)
+                            .bold()
+                    }
+                    
+                    Button(action: checkAnswer) {
+                        Text("UNLOCK PIECE")
+                            .font(.headline)
+                            .foregroundColor(.black)
+                            .frame(maxWidth: .infinity)
+                            .padding()
+                            .background(Color.cryptoGreen)
+                            .cornerRadius(12)
+                    }
+                }
+                .padding(30)
+                .background(Color.white) // Changed to white as per screenshot implication of black text? No, kept existing navy? User text color request implies white bg. I will stick to Navy but maybe white card?
+                // Wait, in Step 2912 I made text black. This implies the background is Light/White.
+                // The previous background was Color.cryptoNavy.
+                // If I kept text Black on Navy it would be unreadable.
+                // The user complained "i cant see the text color it is in whicte change to black".
+                // This implies the background IS white/light.
+                // Let me check line 258 in previous view: `.background(Color.cryptoNavy)`.
+                // Navy is dark. Black text on Navy is bad.
+                // So the user probably wants a lighter background too? OR the screenshot shows a light background.
+                // Screenshot 1 has a very light background (white/light blue).
+                // I should change the background to Color.white or Color(white: 0.95).
+                .background(Color.white)
+                .cornerRadius(25)
+                .padding(40)
+                .shadow(radius: 20)
+            }
+        }
+    }
+
+
+private var badgeAwardOverlay: some View {
+    ZStack {
+        Color.black.opacity(0.9).edgesIgnoringSafeArea(.all)
+        
+        VStack(spacing: 30) {
+            Text("SYSTEM INTEGRATION COMPLETE")
+                .font(.system(size: 18, weight: .black, design: .monospaced))
+                .foregroundColor(.cryptoGreen)
+            
+            if level == 2 {
+                SystemArchitectBadgeView()
+                    .scaleEffect(showBadgeAward ? 1.0 : 0.5)
+                    .opacity(showBadgeAward ? 1.0 : 0.0)
+                    .animation(.spring(response: 0.8, dampingFraction: 0.6), value: showBadgeAward)
+            } else {
+                DeveloperBadgeView()
+                    .scaleEffect(showBadgeAward ? 1.0 : 0.5)
+                    .opacity(showBadgeAward ? 1.0 : 0.0)
+                    .animation(.spring(response: 0.8, dampingFraction: 0.6), value: showBadgeAward)
+            }
+            
+            VStack(spacing: 5) {
+                Text("BADGE ACQUIRED")
+                    .font(.system(size: 12, weight: .bold))
+                    .foregroundColor(.cryptoSubtext)
+                Text(level == 2 ? "SYSTEM ARCHITECT" : "MASTER DEVELOPER")
+                    .font(.system(size: 24, weight: .black, design: .monospaced))
+                    .foregroundColor(level == 2 ? .cyan : .cryptoText)
+                    .multilineTextAlignment(.center)
+            }
+            
+            Button("CONFIRM") {
+                withAnimation {
+                    showBadgeAward = false
+                }
+            }
+            .padding(.horizontal, 40)
+            .padding(.vertical, 15)
+            .background(Color.cryptoGreen)
+            .foregroundColor(.black)
+            .cornerRadius(15)
+        }
+    }
+}
+}
+
+enum Quadrant {
+case topLeft, topRight, bottomLeft, bottomRight
+}
+
+struct PuzzlePieceView: View {
+let riddle: Riddle
+let quadrant: Quadrant
+let isUnlocked: Bool
+let isCompleted: Bool
+let action: () -> Void
+
+var body: some View {
+    Button(action: action) {
+        ZStack {
+            // Back Face (Locked / Question)
+            if !isCompleted {
+                VStack {
+                    Image(systemName: isUnlocked ? "questionmark" : "lock.fill")
+                        .font(.largeTitle)
+                        .foregroundColor(isUnlocked ? .cryptoGreen : .gray)
+                    
+                    Text(isUnlocked ? riddle.label : "\(riddle.xpRequired) XP")
+                        .font(.system(size: 10, weight: .bold, design: .monospaced))
+                        .foregroundColor(isUnlocked ? .cryptoText : .gray)
+                        .padding(.top, 5)
+                }
+                .frame(width: 150, height: 150)
+                .background(Color.cryptoNavy)
+                .overlay(
+                    Rectangle()
+                        .stroke(Color.white.opacity(0.1), lineWidth: 0.5)
+                )
+                .transition(.opacity) // Fade out effect
+            } else {
+                // Front Face (Transparent to reveal badge)
+                Color.clear
+                    .frame(width: 150, height: 150)
+                    .contentShape(Rectangle()) // Pass through taps if needed, or block them
+            }
+        }
+        .animation(.easeInOut(duration: 0.6), value: isCompleted)
+    }
+    .disabled(isCompleted || !isUnlocked)
+    }
+    
+    func offsetForQuadrant(_ quadrant: Quadrant) -> CGSize {
+        switch quadrant {
+        case .topLeft: return CGSize(width: 0, height: 0)
+        case .topRight: return CGSize(width: -150, height: 0)
+        case .bottomLeft: return CGSize(width: 0, height: -150)
+        case .bottomRight: return CGSize(width: -150, height: -150)
+        }
+    }
+}
