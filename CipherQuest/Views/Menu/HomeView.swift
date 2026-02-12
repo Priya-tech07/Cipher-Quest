@@ -48,13 +48,13 @@ struct HomeView: View {
                         .shadow(color: Color.black.opacity(0.05), radius: 5, x: 0, y: 2)
                     }
                     .onboardingTarget(.topRight) // Track Profile Button
-                    .padding(.top, 50)
+                    .padding(.top, 10)
                     .padding(.trailing, 20)
                 }
                 Spacer()
             }
             
-            VStack(spacing: 50) {
+            VStack(spacing: 20) {
                 Spacer()
                 
                 // Title Section
@@ -83,17 +83,19 @@ struct HomeView: View {
                     MenuButton(title: "EASY MISSION", icon: "arrow.right.circle.fill", color: .cryptoBlue, textColor: .white) {
                          withAnimation { viewModel.startGame(mode: .story) }
                     }
+                    .onboardingTarget(.missionEasy)
                     
                     MenuButton(title: "HARD MISSION", icon: "shield.righthalf.filled", color: .cryptoGreen, textColor: .white) {
                          withAnimation { viewModel.startPractice(difficulty: "HARD") }
                     }
+                    .onboardingTarget(.missionHard)
                     
                     MenuButton(title: "DIFFICULT MISSION", icon: "exclamationmark.triangle.fill", color: .cryptoText, textColor: .white) { // Darker for extra hard
                          withAnimation { viewModel.startPractice(difficulty: "DIFFICULT") }
                     }
+                    .onboardingTarget(.missionDifficult)
                 }
                 .padding(.horizontal, 40)
-                .onboardingTarget(.center) // Track Mission Area
                 
                 Spacer()
                 
@@ -164,7 +166,7 @@ struct HomeView: View {
                         .font(.caption2)
                         .foregroundColor(.gray)
                 }
-                .padding(.bottom, 10)
+                .padding(.bottom, 60)
             }
         }
     }

@@ -29,6 +29,27 @@ struct RiddleGridView: View {
                 Riddle(id: 7, question: "I am the tool that tracks changes in your source code. What am I?", answer: "GIT", xpRequired: 600, label: "VERSION"),
                 Riddle(id: 8, question: "I scramble data so only authorized parties can understand it. What am I?", answer: "ENCRYPTION", xpRequired: 650, label: "SECURITY")
             ]
+        } else if level == 3 {
+            return [
+                Riddle(id: 9, question: "I am the protocol that ensures secure data transfer over the web. What am I?", answer: "HTTPS", xpRequired: 1000, label: "PROTOCOL"),
+                Riddle(id: 10, question: "I am a unique string that identifies a specific device on a network. What am I?", answer: "IP", xpRequired: 1100, label: "ADDRESS"),
+                Riddle(id: 11, question: "I am the process of converting human-readable code into machine code. What am I?", answer: "COMPILATION", xpRequired: 1200, label: "SYSTEM"),
+                Riddle(id: 12, question: "I am a malicious program that replicates itself to spread to other computers. What am I?", answer: "WORM", xpRequired: 1300, label: "THREAT")
+            ]
+        } else if level == 4 {
+            return [
+                Riddle(id: 13, question: "I am a cryptographic hash function used to verify data integrity. What am I?", answer: "SHA", xpRequired: 2000, label: "HASH"),
+                Riddle(id: 14, question: "I am a piece of code that provides a way to interact with a hardware device. What am I?", answer: "DRIVER", xpRequired: 2100, label: "HARDWARE"),
+                Riddle(id: 15, question: "I am the principle of giving users only the access they need for their job. What am I?", answer: "LEAST PRIVILEGE", xpRequired: 2200, label: "POLICY"),
+                Riddle(id: 16, question: "I am a decentralized ledger that records transactions across many computers. What am I?", answer: "BLOCKCHAIN", xpRequired: 2300, label: "LEDGER")
+            ]
+        } else if level == 5 {
+            return [
+                Riddle(id: 17, question: "I am the foundational model that describes how network protocols interact. What am I?", answer: "OSI", xpRequired: 3000, label: "ARCHITECTURE"),
+                Riddle(id: 18, question: "I am a system designed to detect and block unauthorized access to a network. What am I?", answer: "IPS", xpRequired: 3200, label: "DEFENSE"),
+                Riddle(id: 19, question: "I am the mathematical foundation of modern computer science and logic. What am I?", answer: "BOOLEAN", xpRequired: 3400, label: "LOGIC"),
+                Riddle(id: 20, question: "I am the elusive goal of building systems that learn and adapt on their own. What am I?", answer: "AGI", xpRequired: 3600, label: "FUTURE")
+            ]
         } else {
             // Level 1 Default
             return [
@@ -77,12 +98,24 @@ struct RiddleGridView: View {
                 // Puzzle Grid (2x2 Container)
                 ZStack {
                      // Underlying Badge (The Reward)
-                    if level == 2 {
+                    if level == 1 {
+                        DeveloperBadgeView()
+                            .scaleEffect(1.5)
+                            .frame(width: 300, height: 300)
+                    } else if level == 2 {
                         SystemArchitectBadgeView()
                             .scaleEffect(1.5)
                             .frame(width: 300, height: 300)
+                    } else if level == 3 {
+                        CyberSentinelBadgeView()
+                            .scaleEffect(1.5)
+                            .frame(width: 300, height: 300)
+                    } else if level == 4 {
+                        SecurityMasterBadgeView()
+                            .scaleEffect(1.5)
+                            .frame(width: 300, height: 300)
                     } else {
-                        DeveloperBadgeView()
+                        GrandMasterBadgeView()
                             .scaleEffect(1.5)
                             .frame(width: 300, height: 300)
                     }
@@ -130,8 +163,18 @@ struct RiddleGridView: View {
                 
                 Spacer()
                 
-                if (level == 1 && viewModel.playerStats.hasDeveloperBadge) || (level == 2 && viewModel.playerStats.hasArchitectBadge) {
-                    Text("BADGE RECOVERED: \(level == 2 ? "SYSTEM ARCHITECT" : "MASTER DEVELOPER")")
+                if (level == 1 && viewModel.playerStats.hasDeveloperBadge) || (level == 2 && viewModel.playerStats.hasArchitectBadge) || (level == 3 && viewModel.playerStats.hasSentinelBadge) || (level == 4 && viewModel.playerStats.hasSecurityBadge) || (level == 5 && viewModel.playerStats.hasGrandMasterBadge) {
+                    let badgeName: String = {
+                        switch level {
+                        case 1: return "MASTER DEVELOPER"
+                        case 2: return "SYSTEM ARCHITECT"
+                        case 3: return "CYBER SENTINEL"
+                        case 4: return "SECURITY MASTER"
+                        case 5: return "GRAND MASTER"
+                        default: return ""
+                        }
+                    }()
+                    Text("BADGE RECOVERED: \(badgeName)")
                         .font(.system(size: 12, weight: .bold, design: .monospaced))
                         .foregroundColor(.cryptoGreen)
                         .padding()
@@ -175,7 +218,7 @@ struct RiddleGridView: View {
                     viewModel.playerStats.experience += 50
                     
                     // Check completion inside the same update cycle
-                    let requiredCount = (level == 2) ? 8 : 4 // Total riddles count logic
+
                     // Simpler check: check if all current level riddles are done
                     let levelRiddleIds = riddles.map { $0.id }
                     let isLevelComplete = levelRiddleIds.allSatisfy { viewModel.playerStats.completedRiddles.contains($0) }
@@ -184,20 +227,22 @@ struct RiddleGridView: View {
                         if level == 1 && !viewModel.playerStats.hasDeveloperBadge {
                             viewModel.playerStats.hasDeveloperBadge = true
                             viewModel.playerStats.experience += 50
-                            // Delay badge award overlay until after user closes reward popup?
-                            // Or show it immediately on top? 
-                            // Better to let them close the reward popup first. 
-                            // Logic: The badge award overlay uses `showBadgeAward`.
-                            // I'll trigger it, but maybe users won't see it if mystery box is top? 
-                            // ZStack order: Mystery Box is on top of Badge Award (lines 143 vs 148 in view_file?).
-                            // Let's check ZStack order.
-                            // Line 142: Mystery Popup.
-                            // Line 148: Badge Award.
-                            // So Badge Award is ON TOP of Mystery Popup.
                             DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) { showBadgeAward = true }
                         } else if level == 2 && !viewModel.playerStats.hasArchitectBadge {
                             viewModel.playerStats.hasArchitectBadge = true
                             viewModel.playerStats.experience += 100
+                            DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) { showBadgeAward = true }
+                        } else if level == 3 && !viewModel.playerStats.hasSentinelBadge {
+                            viewModel.playerStats.hasSentinelBadge = true
+                            viewModel.playerStats.experience += 150
+                            DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) { showBadgeAward = true }
+                        } else if level == 4 && !viewModel.playerStats.hasSecurityBadge {
+                            viewModel.playerStats.hasSecurityBadge = true
+                            viewModel.playerStats.experience += 200
+                            DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) { showBadgeAward = true }
+                        } else if level == 5 && !viewModel.playerStats.hasGrandMasterBadge {
+                            viewModel.playerStats.hasGrandMasterBadge = true
+                            viewModel.playerStats.experience += 500
                             DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) { showBadgeAward = true }
                         }
                     }
@@ -212,7 +257,7 @@ struct RiddleGridView: View {
     
     private func mysteryBoxOverlay(for riddle: Riddle) -> some View {
         ZStack {
-            Color.black.opacity(0.8).edgesIgnoringSafeArea(.all)
+            Color.white.edgesIgnoringSafeArea(.all)
                 .onTapGesture { selectedRiddle = nil }
             
             if showFeedback && feedbackMsg.contains("GRANTED") {
@@ -225,16 +270,18 @@ struct RiddleGridView: View {
                             .frame(width: 100, height: 100)
                         Image(systemName: "lock.open.fill")
                             .font(.system(size: 40))
-                            .foregroundColor(.blue)
+                            .foregroundColor(.cryptoGreen)
                     }
                     
-                    Text("ACCESS GRANTED")
-                        .font(.system(size: 22, weight: .black, design: .monospaced))
-                        .foregroundColor(.blue)
-                    
-                    Text("System Integration Complete")
-                        .font(.caption)
-                        .foregroundColor(.gray)
+                    VStack(spacing: 8) {
+                        Text("ACCESS GRANTED")
+                            .font(.system(size: 22, weight: .black, design: .monospaced))
+                            .foregroundColor(.cryptoGreen)
+                        
+                        Text("✨ Sector Decrypted ✨")
+                            .font(.system(size: 12, weight: .bold, design: .monospaced))
+                            .foregroundColor(.cryptoSubtext)
+                    }
                     
                     VStack(spacing: 5) {
                         Text("DECRYPTED MESSAGE")
@@ -290,7 +337,7 @@ struct RiddleGridView: View {
                             .foregroundColor(.white)
                             .frame(maxWidth: .infinity)
                             .padding()
-                            .background(Color.blue)
+                            .background(Color.cryptoGreen)
                             .cornerRadius(12)
                     }
                     
@@ -305,7 +352,7 @@ struct RiddleGridView: View {
                     .foregroundColor(.gray)
                 }
                 .padding(30)
-                .background(Color.cryptoNavy)
+                .background(Color.white)
                 .cornerRadius(25)
                 .padding(40)
                 .shadow(radius: 20)
@@ -351,7 +398,7 @@ struct RiddleGridView: View {
                     Button(action: checkAnswer) {
                         Text("UNLOCK PIECE")
                             .font(.headline)
-                            .foregroundColor(.black)
+                            .foregroundColor(.white)
                             .frame(maxWidth: .infinity)
                             .padding()
                             .background(Color.cryptoGreen)
@@ -381,33 +428,57 @@ struct RiddleGridView: View {
 
 private var badgeAwardOverlay: some View {
     ZStack {
-        Color.black.opacity(0.9).edgesIgnoringSafeArea(.all)
+        Color.white.edgesIgnoringSafeArea(.all)
+        
+        ConfettiView()
+            .zIndex(5)
         
         VStack(spacing: 30) {
-            Text("SYSTEM INTEGRATION COMPLETE")
-                .font(.system(size: 18, weight: .black, design: .monospaced))
-                .foregroundColor(.cryptoGreen)
-            
-            if level == 2 {
-                SystemArchitectBadgeView()
-                    .scaleEffect(showBadgeAward ? 1.0 : 0.5)
-                    .opacity(showBadgeAward ? 1.0 : 0.0)
-                    .animation(.spring(response: 0.8, dampingFraction: 0.6), value: showBadgeAward)
-            } else {
-                DeveloperBadgeView()
-                    .scaleEffect(showBadgeAward ? 1.0 : 0.5)
-                    .opacity(showBadgeAward ? 1.0 : 0.0)
-                    .animation(.spring(response: 0.8, dampingFraction: 0.6), value: showBadgeAward)
+            VStack(spacing: 8) {
+                Text("SYSTEM INTEGRATION")
+                    .font(.system(size: 16, weight: .black, design: .monospaced))
+                    .foregroundColor(.cryptoSubtext)
+                Text("COMPLETE")
+                    .font(.system(size: 32, weight: .black, design: .monospaced))
+                    .foregroundColor(.cryptoGreen)
             }
             
-            VStack(spacing: 5) {
-                Text("BADGE ACQUIRED")
-                    .font(.system(size: 12, weight: .bold))
+            if level == 1 {
+                DeveloperBadgeView()
+            } else if level == 2 {
+                SystemArchitectBadgeView()
+            } else if level == 3 {
+                CyberSentinelBadgeView()
+            } else if level == 4 {
+                SecurityMasterBadgeView()
+            } else if level == 5 {
+                GrandMasterBadgeView()
+            }
+            
+            VStack(spacing: 12) {
+                Text("MISSION SUCCESS")
+                    .font(.system(size: 12, weight: .bold, design: .monospaced))
                     .foregroundColor(.cryptoSubtext)
-                Text(level == 2 ? "SYSTEM ARCHITECT" : "MASTER DEVELOPER")
+                
+                let badgeName: String = {
+                    switch level {
+                    case 1: return "MASTER DEVELOPER"
+                    case 2: return "SYSTEM ARCHITECT"
+                    case 3: return "CYBER SENTINEL"
+                    case 4: return "SECURITY MASTER"
+                    case 5: return "GRAND MASTER"
+                    default: return ""
+                    }
+                }()
+                Text(badgeName)
                     .font(.system(size: 24, weight: .black, design: .monospaced))
-                    .foregroundColor(level == 2 ? .cyan : .cryptoText)
+                    .foregroundColor(level == 5 ? .cryptoPurple : .cryptoText)
                     .multilineTextAlignment(.center)
+                
+                Text("BADGE ACQUIRED")
+                    .font(.system(size: 14, weight: .black, design: .monospaced))
+                    .foregroundColor(.cryptoGreen)
+                    .padding(.top, 5)
             }
             
             Button("CONFIRM") {
@@ -418,7 +489,7 @@ private var badgeAwardOverlay: some View {
             .padding(.horizontal, 40)
             .padding(.vertical, 15)
             .background(Color.cryptoGreen)
-            .foregroundColor(.black)
+            .foregroundColor(.white)
             .cornerRadius(15)
         }
     }

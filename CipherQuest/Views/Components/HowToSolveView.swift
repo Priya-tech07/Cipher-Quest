@@ -29,7 +29,6 @@ struct HowToSolveView: View {
                     Text("CIPHER ACADEMY")
                         .font(.system(size: 18, weight: .black, design: .monospaced))
                         .foregroundColor(.cryptoText)
-                        .padding(.top, 10) // Align with button
                     
                     Spacer()
                     
@@ -45,9 +44,9 @@ struct HowToSolveView: View {
                     .opacity(0)
                 }
                 .padding(.horizontal)
-                .padding(.bottom, 15) // Bottom spacing
-                .padding(.top, 50) // Push down from status bar
-                .background(Color.cryptoNavy)
+                .padding(.bottom, 15)
+                .padding(.top, 50)
+                .background(Color.white.edgesIgnoringSafeArea(.top))
                 
                 ScrollView {
                     VStack(spacing: 20) {
@@ -57,6 +56,10 @@ struct HowToSolveView: View {
                             .padding(.top)
                         
                         // Menu Cards
+                        CipherCard(title: "ATBASH CIPHER", icon: "arrow.up.arrow.down", color: .cryptoBlue) {
+                            withAnimation { selectedCipher = .atbash }
+                        }
+                        
                         CipherCard(title: "CAESAR CIPHER", icon: "arrow.triangle.2.circlepath", color: .cryptoGreen) {
                             withAnimation { selectedCipher = .caesar }
                         }
@@ -65,18 +68,15 @@ struct HowToSolveView: View {
                             withAnimation { selectedCipher = .vigenere }
                         }
                         
-                        CipherCard(title: "PLAYFAIR CIPHER", icon: "grid", color: .cryptoBlue) {
-                            withAnimation { selectedCipher = .playfair }
-                        }
-                        
 
                     }
                     .padding()
                 }
             }
+
             .background(Color.white)
-            .cornerRadius(20, corners: [.topLeft, .topRight])
-            .shadow(color: Color.black.opacity(0.3), radius: 20, x: 0, y: -5)
+            .edgesIgnoringSafeArea(.all)
+            // Removed corner radius and shadow for full screen look
             
             // Tutorial Overlay
             if let cipher = selectedCipher {
@@ -134,3 +134,5 @@ struct CipherCard: View {
         }
     }
 }
+
+

@@ -18,12 +18,12 @@ class PuzzleGenerator {
             // Daily challenge logic
             // Use the seed to pick a type
             var generator =  seed != nil ? RandomNumberGeneratorWrapper(seed: seed!) : RandomNumberGeneratorWrapper(seed: 0)
-            let types: [CipherType] = [.caesar, .vigenere, .playfair]
+            let types: [CipherType] = [.atbash, .caesar, .vigenere]
             type = types.randomElement(using: &generator) ?? .vigenere
             difficulty = 3 // Standardize daily difficulty or randomize it
         } else {
-             // For Story Mode (easy level), use only Caesar
-             type = .caesar
+             // For Story Mode (easy level), use only Atbash
+             type = .atbash
         }
         
         // Data source
@@ -69,9 +69,11 @@ class PuzzleGenerator {
         // Generate random key
         let key: String
         switch type {
+        case .atbash:
+            key = "NOKEY" // Atbash doesn't use a key, but we need a valid string
         case .caesar:
             key = String(Int.random(in: 1...5, using: &generator))
-        case .vigenere, .playfair:
+        case .vigenere:
             let keywords = ["SKY", "BLUE", "CODE", "MOON", "TECH", "DATA", "BYTE", "NIGHT", "STAR", "GRID"]
             key = keywords.randomElement(using: &generator) ?? "KEY"
         }

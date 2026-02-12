@@ -3,6 +3,7 @@ import SwiftUI
 
 struct ContentView: View {
     @StateObject private var viewModel = GameViewModel()
+    @State private var onboardingTargets: [HighlightArea: CGRect] = [:]
     
     var body: some View {
         ZStack {
@@ -35,7 +36,7 @@ struct ContentView: View {
 
                 if viewModel.isShowingHowToSolve {
                     HowToSolveView(
-                        cipherType: viewModel.currentLevel?.cipherType,
+                        cipherType: viewModel.gameState == .playing ? viewModel.currentLevel?.cipherType : nil,
                         onDismiss: {
                             withAnimation { viewModel.isShowingHowToSolve = false }
                         }
@@ -44,6 +45,7 @@ struct ContentView: View {
                     .zIndex(1)
                 } else if viewModel.isShowingReference {
                     AlphabetReferenceView(
+                        cipherType: viewModel.currentLevel?.cipherType,
                         onDismiss: {
                             withAnimation { viewModel.isShowingReference = false }
                         }
@@ -61,12 +63,15 @@ struct ContentView: View {
                     .zIndex(3)
                 }
             }
-            .edgesIgnoringSafeArea(.bottom)
+            .edgesIgnoringSafeArea(.all)
         )
+        .onPreferenceChange(OnboardingPreferenceKey.self) { preferences in
+            self.onboardingTargets = preferences
+        }
         .overlay(
             Group {
                 if viewModel.isShowingOnboarding {
-                    OnboardingOverlay(viewModel: viewModel)
+                    OnboardingOverlay(viewModel: viewModel, targetFrames: onboardingTargets)
                         .transition(.opacity)
                         .zIndex(100)
                 }

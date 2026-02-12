@@ -9,6 +9,12 @@ struct CipherTutorialView: View {
     // Tutorial Steps Data based on Cipher Type
     var steps: [TutorialStep] {
         switch cipherType {
+        case .atbash:
+            return [
+                TutorialStep(title: "The Reverse Map", description: "The first letter flips with the last.", visual: .atbashMapping),
+                TutorialStep(title: "Symmetry", description: "A becomes Z, Z becomes A. It works both ways!", visual: .atbashMirror),
+                TutorialStep(title: "Example", description: "HELLO becomes SVOOL.", visual: .atbashExample)
+            ]
         case .caesar:
             return [
                 TutorialStep(title: "The Shift", description: "Imagine the alphabet as a wheel.", visual: .caesarWheel),
@@ -22,16 +28,6 @@ struct CipherTutorialView: View {
                 TutorialStep(title: "Align & Repeat", description: "Write the keyword under your message.", visual: .vigenereAlign),
                 TutorialStep(title: "Add Values", description: "Add the letter values (A=0, B=1...).", visual: .vigenereAdd),
                 TutorialStep(title: "Modulo 26", description: "Wrap around if the sum > 25.", visual: .vigenereMod)
-            ]
-        case .playfair:
-            return [
-                TutorialStep(title: "The 5x5 Grid", description: "Key: MONARCHY. First, we build the 5x5 grid with the key and remaining alphabet.", visual: .playfairGrid),
-                TutorialStep(title: "Make Pairs", description: "Let's encrypt 'OMZKBV'. Split it into pairs: 'OM', 'ZK', and 'BV'.", visual: .playfairPairs),
-                TutorialStep(title: "Rule 1: Same Row", description: "Pair 'OM' is in the same ROW. Shift RIGHT to find the new letters.", visual: .playfairRow),
-                TutorialStep(title: "Rule 2: Same Column", description: "Pair 'ZK' is in the same COLUMN. Shift DOWN to find the new letters.", visual: .playfairCol),
-                TutorialStep(title: "Rule 3: Rectangle", description: "Pair 'BV' forms a rectangle. Swap corners horizontally.", visual: .playfairRect),
-                TutorialStep(title: "The Result", description: "Combine everything to get our encrypted message: 'NORTH'.", visual: .playfairResult),
-                TutorialStep(title: "The Playfair Logic", description: "Think of it as a set of logical operations based on position.", visual: .playfairFormula)
             ]
         }
     }
@@ -157,6 +153,10 @@ struct TutorialStep {
 }
 
 enum TutorialVisualType {
+    case atbashMapping
+    case atbashMirror
+    case atbashExample
+    
     case caesarWheel
     case caesarShift(Int)
     case caesarEncrypt
@@ -166,40 +166,13 @@ enum TutorialVisualType {
     case vigenereAlign
     case vigenereAdd
     case vigenereMod
-    
-    case playfairGrid
-    case playfairPairs
-    case playfairRow
-    case playfairCol
-    case playfairRect
-    case playfairResult
-    case playfairFormula
 }
 
 struct TutorialVisualView: View {
     let visualType: TutorialVisualType
     @State private var animate = false
     
-    // Consistent Grid for Playfair examples
-    let cellSize: CGFloat = 40
-    let gridSpacing: CGFloat = 5
-    let gridRows = [
-        ["M","O","N","A","R"],
-        ["C","H","Y","B","D"],
-        ["E","F","G","I","K"],
-        ["L","P","Q","S","T"], // S, T are in row 3 (0-indexed)
-        ["U","V","W","X","Z"]
-    ]
-    
-    // Helper to calculate exact center offset for any cell (row, col)
-    // Grid Center is (2, 2) which corresponds to offset (0, 0)
-    func getGridOffset(row: Int, col: Int) -> CGSize {
-        let stride = cellSize + gridSpacing
-        return CGSize(
-            width: CGFloat(col - 2) * stride, // -2 to center around index 2
-            height: CGFloat(row - 2) * stride
-        )
-    }
+
     
     var body: some View {
         GeometryReader { geometry in
@@ -207,6 +180,38 @@ struct TutorialVisualView: View {
                 Color.clear // Ensure ZStack fills space
                 
                 switch visualType {
+            // ATBASH
+            case .atbashMapping:
+                VStack(spacing: 20) {
+                    Text("Top: A B C D ... M").font(.headline)
+                    Image(systemName: "arrow.up.arrow.down").font(.title).foregroundColor(.cryptoGreen)
+                    Text("Bot: Z Y X W ... N").font(.headline)
+                }.padding()
+                
+            case .atbashMirror:
+                HStack(spacing: 30) {
+                    VStack {
+                        Text("A")
+                        Image(systemName: "arrow.down")
+                        Text("Z")
+                    }
+                    VStack {
+                        Text("Z")
+                        Image(systemName: "arrow.down")
+                        Text("A")
+                    }
+                }
+                .font(.largeTitle)
+                .foregroundColor(.cryptoPurple)
+                
+            case .atbashExample:
+                VStack(spacing: 10) {
+                     Text("H  E  L  L  O")
+                     Image(systemName: "arrow.down").foregroundColor(.gray)
+                     Text("S  V  O  O  L").bold().foregroundColor(.cryptoGreen)
+                }
+                .font(.title)
+
             // CAESAR
             case .caesarWheel:
                 Circle()
@@ -256,6 +261,7 @@ struct TutorialVisualView: View {
                 }
                 .onAppear { withAnimation(.spring().repeatForever(autoreverses: true)) { animate = true } }
 
+
             // VIGENERE
             case .vigenereKeyword:
                 Text("KEY")
@@ -286,313 +292,9 @@ struct TutorialVisualView: View {
                      .padding()
                      .background(Color.yellow.opacity(0.2))
                      .cornerRadius(10)
-
-            // PLAYFAIR
-            case .playfairGrid:
-                VStack(spacing: 5) {
-                    Text("KEY: MONARCHY").font(.headline).foregroundColor(.cryptoPurple)
-                    ForEach(0..<5) { r in
-                        HStack(spacing: 5) {
-                            ForEach(0..<5) { c in
-                                RoundedRectangle(cornerRadius: 3)
-                                    .fill(
-                                        (r == 0 || (r == 1 && c <= 2)) // Highlight keyword
-                                        ? Color.cryptoPurple.opacity(animate ? 0.3 : 0.1)
-                                        : Color.gray.opacity(0.1)
-                                    )
-                                    .frame(width: 40, height: 40)
-                                    .overlay(Text(gridRows[r][c]).font(.headline).foregroundColor((r == 0 || (r == 1 && c <= 2)) ? .cryptoPurple : .primary))
-                            }
-                        }
-                    }
-                }
-                .onAppear { withAnimation(.easeInOut(duration: 2).repeatForever(autoreverses: true)) { animate = true } }
-                
-            case .playfairPairs:
-                VStack(spacing: 20) {
-                    Text("MESSAGE: OMZKBV").font(.title3).bold()
-                    HStack(spacing: 15) {
-                        VStack {
-                            Text("OM").font(.title).bold().foregroundColor(.blue)
-                            Text("Pair 1").font(.caption).foregroundColor(.gray)
-                        }
-                        VStack {
-                            Text("ZK").font(.title).bold().foregroundColor(.blue)
-                            Text("Pair 2").font(.caption).foregroundColor(.gray)
-                        }
-                        VStack {
-                            Text("BV").font(.title).bold().foregroundColor(.blue)
-                            Text("Pair 3").font(.caption).foregroundColor(.gray)
-                        }
-                    }
-                    Text("Split into letter pairs.").font(.caption).italic().foregroundColor(.gray)
-                }
-                
-            case .playfairRow:
-                VStack {
-                    ZStack {
-                        VStack(spacing: gridSpacing) {
-                             ForEach(0..<5) { r in
-                                HStack(spacing: gridSpacing) {
-                                    ForEach(0..<5) { c in
-                                        let char = gridRows[r][c]
-                                        let isSource = (r == 0 && (c == 0 || c == 1)) 
-                                        let isTarget = (r == 0 && (c == 1 || c == 2))
-                                        let isRelevant = (r == 0 && (c == 0 || c == 1 || c == 2))
-                                        
-                                        ZStack {
-                                            Rectangle()
-                                                .fill(
-                                                    isTarget && animate ? Color.blue.opacity(0.8) : 
-                                                    (isSource ? Color.blue.opacity(0.3) : Color.gray.opacity(0.1))
-                                                )
-                                                .frame(width: cellSize, height: cellSize)
-                                                .cornerRadius(5)
-                                            Text(char)
-                                                .font(.system(size: 16, weight: .bold))
-                                                .foregroundColor(isTarget && animate ? .white : (isSource ? .blue : .gray))
-                                        }
-                                        .opacity(isRelevant ? 1.0 : 0.2)
-                                        .scaleEffect((isTarget && animate) ? 1.1 : (isRelevant ? 1.05 : 1.0))
-                                    }
-                                }
-                            }
-                        }
-                        if animate {
-                            Image(systemName: "arrow.right").font(.title).bold().foregroundColor(.blue)
-                                .offset(getGridOffset(row: 0, col: 0))
-                                .offset(x: 22.5)
-                                .transition(.opacity.combined(with: .scale))
-                            Image(systemName: "arrow.right").font(.title).bold().foregroundColor(.blue)
-                                .offset(getGridOffset(row: 0, col: 1))
-                                .offset(x: 22.5)
-                                .transition(.opacity.combined(with: .scale))
-                        }
-                    }
-                    VStack(spacing: 5) {
-                        if !animate {
-                            Text("Locate 'O' and 'M' in the same ROW.")
-                                .font(.caption).foregroundColor(.gray)
-                        } else {
-                            Text("Move RIGHT → Result: 'NO'")
-                                .font(.headline).bold().foregroundColor(.blue)
-                        }
-                    }
-                    .frame(height: 50)
-                }
-                .task {
-                    while !Task.isCancelled {
-                        animate = false
-                        try? await Task.sleep(nanoseconds: 1_500_000_000)
-                        withAnimation(.spring(response: 0.6, dampingFraction: 0.7)) {
-                            animate = true
-                        }
-                        try? await Task.sleep(nanoseconds: 3_000_000_000)
-                    }
-                }
-
-            case .playfairCol:
-                VStack {
-                    ZStack {
-                        VStack(spacing: gridSpacing) {
-                             ForEach(0..<5) { r in
-                                HStack(spacing: gridSpacing) {
-                                    ForEach(0..<5) { c in
-                                        let char = gridRows[r][c]
-                                        let isSource = (c == 4 && (r == 4 || r == 2))
-                                        let isTarget = (c == 4 && (r == 0 || r == 3))
-                                        let isRelevant = isSource || isTarget
-                                        ZStack {
-                                            Rectangle()
-                                                .fill(
-                                                    isTarget && animate ? Color.blue.opacity(0.8) :
-                                                    (isSource ? Color.blue.opacity(0.3) : Color.gray.opacity(0.1))
-                                                )
-                                                .frame(width: cellSize, height: cellSize)
-                                                .cornerRadius(5)
-                                            Text(char)
-                                                .font(.system(size: 16, weight: .bold))
-                                                .foregroundColor(isTarget && animate ? .white : (isSource ? .blue : .gray))
-                                        }
-                                        .opacity(isRelevant ? 1.0 : 0.2)
-                                        .scaleEffect((isTarget && animate) ? 1.1 : (isRelevant ? 1.05 : 1.0))
-                                    }
-                                }
-                            }
-                        }
-                        if animate {
-                            Image(systemName: "arrow.down").font(.title).bold().foregroundColor(.blue)
-                                .offset(getGridOffset(row: 4, col: 4))
-                                .offset(y: 22.5)
-                                .transition(.opacity)
-                            Image(systemName: "arrow.down").font(.title).bold().foregroundColor(.blue)
-                                .offset(getGridOffset(row: 2, col: 4))
-                                .offset(y: 22.5)
-                                .transition(.opacity)
-                        }
-                    }
-                    VStack(spacing: 5) {
-                        if !animate {
-                             Text("Locate 'Z' and 'K' in the same COL.")
-                                .font(.caption).foregroundColor(.gray)
-                        } else {
-                            Text("Move DOWN → Result: 'RT'")
-                                .font(.headline).bold().foregroundColor(.blue)
-                        }
-                    }
-                    .frame(height: 50)
-                }
-                .task {
-                    while !Task.isCancelled {
-                        animate = false
-                        try? await Task.sleep(nanoseconds: 1_500_000_000)
-                        withAnimation(.spring(response: 0.6, dampingFraction: 0.7)) {
-                            animate = true
-                        }
-                        try? await Task.sleep(nanoseconds: 3_000_000_000)
-                    }
-                }
-
-            case .playfairRect:
-                VStack {
-                    ZStack {
-                        VStack(spacing: gridSpacing) {
-                             ForEach(0..<5) { r in
-                                HStack(spacing: gridSpacing) {
-                                    ForEach(0..<5) { c in
-                                        let char = gridRows[r][c]
-                                        let isSource = (r == 1 && c == 3) || (r == 4 && c == 1)
-                                        let isTarget = (r == 1 && c == 1) || (r == 4 && c == 3)
-                                        let isRelevant = isSource || isTarget
-                                        ZStack {
-                                            Rectangle()
-                                                .fill(
-                                                    isTarget && animate ? Color.blue.opacity(0.8) :
-                                                    (isSource ? Color.blue.opacity(0.3) : Color.gray.opacity(0.1))
-                                                )
-                                                .frame(width: cellSize, height: cellSize)
-                                                .cornerRadius(5)
-                                            Text(char)
-                                                .font(.system(size: 16, weight: .bold))
-                                                .foregroundColor(isTarget && animate ? .white : (isSource ? .blue : .gray))
-                                        }
-                                        .opacity(isRelevant ? 1.0 : 0.2)
-                                        .scaleEffect((isTarget && animate) ? 1.1 : (isRelevant ? 1.05 : 1.0))
-                                    }
-                                }
-                            }
-                        }
-                        Rectangle()
-                            .stroke(style: StrokeStyle(lineWidth: 1, dash: [5]))
-                            .foregroundColor(.blue.opacity(0.3))
-                            .frame(width: (cellSize * 3) + (gridSpacing * 2), height: (cellSize * 4) + (gridSpacing * 3))
-                            .offset(x: 0, y: 22.5)
-                            .opacity(0.5)
-                        if animate {
-                            Image(systemName: "arrow.left").font(.title).bold().foregroundColor(.blue)
-                                .offset(getGridOffset(row: 1, col: 3))
-                                .offset(x: -45)
-                                .transition(.opacity)
-                            Image(systemName: "arrow.right").font(.title).bold().foregroundColor(.blue)
-                                .offset(getGridOffset(row: 4, col: 1))
-                                .offset(x: 45)
-                                .transition(.opacity)
-                        }
-                    }
-                    VStack(spacing: 5) {
-                        if !animate {
-                             Text("Locate 'B' and 'V'. Form a Rectangle.")
-                                .font(.caption).foregroundColor(.gray)
-                        } else {
-                            Text("Swap Corners → Result: 'HX'")
-                                .font(.headline).bold().foregroundColor(.blue)
-                        }
-                    }
-                    .frame(height: 50)
-                }
-                .task {
-                    while !Task.isCancelled {
-                        animate = false
-                        try? await Task.sleep(nanoseconds: 1_500_000_000)
-                        withAnimation(.spring(response: 0.6, dampingFraction: 0.7)) {
-                            animate = true
-                        }
-                        try? await Task.sleep(nanoseconds: 3_000_000_000)
-                    }
-                }
-                
-            case .playfairResult:
-                VStack(spacing: 30) {
-                    HStack(spacing: 20) {
-                        VStack(spacing: 5) {
-                            Text("OM").font(.title2).bold().foregroundColor(.gray)
-                            Image(systemName: "arrow.down").font(.caption).foregroundColor(.gray)
-                            Text("NO").font(.title2).bold().foregroundColor(.blue)
-                        }
-                        VStack(spacing: 5) {
-                            Text("ZK").font(.title2).bold().foregroundColor(.gray)
-                            Image(systemName: "arrow.down").font(.caption).foregroundColor(.gray)
-                            Text("RT").font(.title2).bold().foregroundColor(.blue)
-                        }
-                        VStack(spacing: 5) {
-                            Text("BV").font(.title2).bold().foregroundColor(.gray)
-                            Image(systemName: "arrow.down").font(.caption).foregroundColor(.gray)
-                            Text("HX").font(.title2).bold().foregroundColor(.blue)
-                        }
-                    }
-                    if animate {
-                        VStack(spacing: 5) {
-                            Text("COMBINE THEM")
-                                .font(.caption).bold().foregroundColor(.cryptoPurple)
-                            HStack(spacing: 0) {
-                                Text("N").bold(); Text("O").bold(); Text("R").bold(); Text("T").bold(); Text("H").bold()
-                            }
-                            .font(.largeTitle)
-                            .foregroundColor(.blue)
-                            .padding()
-                            .background(Color.blue.opacity(0.1))
-                            .cornerRadius(10)
-                            .transition(.scale)
-                            Text("Result: NORTH").font(.caption).foregroundColor(.gray).padding(.top, 5)
-                        }
-                    }
-                }
-                .onAppear { withAnimation(.spring().delay(1.0)) { animate = true } }
-                
-            case .playfairFormula:
-                VStack(spacing: 20) {
-                    RuleFormulaRow(rule: "ROW", logic: "Shift RIGHT (col + 1)", icon: "arrow.right.square.fill", color: .blue)
-                    RuleFormulaRow(rule: "COLUMN", logic: "Shift DOWN (row + 1)", icon: "arrow.down.square.fill", color: .cryptoPurple)
-                    RuleFormulaRow(rule: "RECTANGLE", logic: "Swap Corners (x₁, y₂)", icon: "rectangle.split.2x1.fill", color: .cryptoGreen)
-                    Text("Always use Modulo 5 for wrap-around.")
-                        .font(.system(size: 10, weight: .bold, design: .monospaced))
-                        .foregroundColor(.cryptoSubtext)
-                        .padding(.top, 10)
-                }
-                .padding()
-                .background(Color.white.opacity(0.5))
-                .cornerRadius(15)
-                .onAppear { withAnimation(.spring()) { animate = true } }
             }
         }
     }
-}
-}
-
-struct RuleFormulaRow: View {
-    let rule: String
-    let logic: String
-    let icon: String
-    let color: Color
-    var body: some View {
-        HStack(spacing: 15) {
-            Image(systemName: icon).font(.title2).foregroundColor(color).frame(width: 40)
-            VStack(alignment: .leading, spacing: 2) {
-                Text(rule).font(.system(size: 12, weight: .black, design: .monospaced)).foregroundColor(color)
-                Text(logic).font(.system(size: 14, weight: .bold, design: .monospaced)).foregroundColor(.cryptoText)
-            }
-            Spacer()
-        }
-        .padding(12).background(Color.white).cornerRadius(10).shadow(color: Color.black.opacity(0.05), radius: 5, x: 0, y: 2)
     }
 }
+

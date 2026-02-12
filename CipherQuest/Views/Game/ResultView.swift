@@ -82,7 +82,7 @@ struct ResultView: View {
                                     Image(systemName: "bolt.fill")
                                         .font(.system(size: 24))
                                         .foregroundColor(.orange)
-                                    Text("+50")
+                                    Text("+\(viewModel.lastEarnedXP)")
                                         .font(.system(size: 16, weight: .bold, design: .monospaced))
                                         .foregroundColor(.cryptoText)
                                 }

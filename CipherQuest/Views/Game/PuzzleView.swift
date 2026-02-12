@@ -24,8 +24,8 @@ struct PuzzleView: View {
                     Spacer()
                     CoinView(amount: viewModel.playerStats.coins)
                 }
-                .padding(.horizontal)
-                .padding(.top, 10)
+                .padding(.horizontal, 24)
+                .padding(.top, 20)
                 
                 // Timer
                 if let level = viewModel.currentLevel, level.timeLimit != nil {
@@ -56,17 +56,19 @@ struct PuzzleView: View {
                             .padding(.horizontal)
                         
                         // Visible Key
-                        HStack {
-                            Text(level.cipherType == .caesar ? "SHIFT:" : "KEY:")
-                                .font(.system(size: 14, weight: .bold, design: .monospaced))
-                                .foregroundColor(.cryptoSubtext)
-                            
-                            Text(level.key)
-                                .font(.system(size: 18, weight: .black, design: .monospaced))
-                                .foregroundColor(.cryptoPurple)
-                                .glow(color: .cryptoPurple, radius: 2)
+                        if level.cipherType != .atbash {
+                            HStack {
+                                Text(level.cipherType == .caesar ? "SHIFT:" : "KEY:")
+                                    .font(.system(size: 14, weight: .bold, design: .monospaced))
+                                    .foregroundColor(.cryptoSubtext)
+                                
+                                Text(level.key)
+                                    .font(.system(size: 18, weight: .black, design: .monospaced))
+                                    .foregroundColor(.cryptoPurple)
+                                    .glow(color: .cryptoPurple, radius: 2)
+                            }
+                            .padding(.vertical, 5)
                         }
-                        .padding(.vertical, 5)
                         
                         ZStack {
                             RoundedRectangle(cornerRadius: 20)
@@ -89,11 +91,17 @@ struct PuzzleView: View {
                         
                         if viewModel.hintState != .none {
                             VStack(spacing: 5) {
-                                Text(viewModel.hintState == .reveal || viewModel.hintState == .secondLetter ? "LETTER REVEALED" : "MISSION INTEL")
+                                // Dynamic Header
+                                let isRevealed: Bool = {
+                                    if case .revealed(_) = viewModel.hintState { return true }
+                                    return false
+                                }()
+                                
+                                Text(isRevealed ? "LETTER REVEALED" : "MISSION INTEL")
                                     .font(.system(size: 10, weight: .bold))
                                     .foregroundColor(.cryptoPurple)
                                 
-                                if viewModel.hintState == .clue || viewModel.hintState == .reveal || viewModel.hintState == .secondLetter {
+                                if viewModel.hintState != .none {
                                     Text(level.hint)
                                         .font(.system(size: 16, weight: .medium, design: .rounded))
                                         .foregroundColor(.cryptoText)
@@ -102,15 +110,8 @@ struct PuzzleView: View {
                                         .transition(.scale)
                                 }
                                 
-                                if viewModel.hintState == .reveal {
-                                    Text("First letter: \(String(level.plaintext.prefix(1)))")
-                                        .font(.system(size: 14, weight: .bold, design: .monospaced))
-                                        .foregroundColor(.cryptoGreen)
-                                        .padding(.top, 5)
-                                }
-                                
-                                if viewModel.hintState == .secondLetter {
-                                    Text("First 2 letters: \(String(level.plaintext.prefix(2)))")
+                                if case .revealed(let count) = viewModel.hintState {
+                                    Text("First \(count) letters: \(String(level.plaintext.prefix(count)))")
                                         .font(.system(size: 14, weight: .bold, design: .monospaced))
                                         .foregroundColor(.cryptoGreen)
                                         .padding(.top, 5)
@@ -210,8 +211,8 @@ struct PuzzleView: View {
                     
                     Spacer()
                 }
-                .padding(.horizontal)
-                .padding(.bottom, 20)
+                .padding(.horizontal, 24)
+                .padding(.bottom, 40)
             }
         }
 

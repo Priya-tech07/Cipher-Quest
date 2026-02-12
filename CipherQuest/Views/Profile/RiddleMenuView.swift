@@ -18,14 +18,17 @@ struct RiddleMenuView: View {
     // Levels Data
     let levels = [
         RiddleLevel(id: 1, title: "MASTER DEVELOPER", description: "Recover the 4 fragments to prove your coding mastery.", icon: "hammer.circle.fill", xpRequired: 0),
-        RiddleLevel(id: 2, title: "SYSTEM ARCHITECT", description: "Locked: Requires Level 10 Clearance.", icon: "lock.circle.fill", xpRequired: 500)
+        RiddleLevel(id: 2, title: "SYSTEM ARCHITECT", description: "Locked: Requires Level 10 Clearance.", icon: "building.columns.circle.fill", xpRequired: 500),
+        RiddleLevel(id: 3, title: "CYBER SENTINEL", description: "Locked: Requires Level 20 Clearance.", icon: "star.circle.fill", xpRequired: 1000),
+        RiddleLevel(id: 4, title: "SECURITY MASTER", description: "Locked: Requires Level 40 Clearance.", icon: "shield.circle.fill", xpRequired: 2000),
+        RiddleLevel(id: 5, title: "GRAND MASTER", description: "Locked: Requires Level 60 Clearance.", icon: "crown.circle.fill", xpRequired: 3000)
     ]
     
     var body: some View {
         // Navigation Logic
         if let level = selectedLevel {
             // Currently only Level 1 points to the existing Grid View
-            if level.id == 1 || level.id == 2 {
+            if level.id >= 1 && level.id <= 5 {
                 RiddleGridView(viewModel: viewModel, level: level.id, onDismiss: { 
                     withAnimation { selectedLevel = nil }
                 })

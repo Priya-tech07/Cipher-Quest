@@ -5,9 +5,19 @@ import SwiftUI
 enum HighlightArea: String, CaseIterable {
     case topRight = "topRight" // Profile Button
     case bottom = "bottom" // How to Solves
-    case center = "center" // Missions
-    case profileStats = "profileStats" // Stats Grid
+    // Missions
+    case missionEasy = "missionEasy"
+    case missionHard = "missionHard"
+    case missionDifficult = "missionDifficult"
+    // Profile Stats
+    case statCoins = "statCoins"
+    case statMissions = "statMissions"
+    case statXP = "statXP"
     case profileRiddles = "profileRiddles" // Riddles Section
+    
+    // Deprecated but kept for compatibility if needed
+    case center = "center" 
+    case profileStats = "profileStats"
 }
 
 // Preference Key to aggregate target frames

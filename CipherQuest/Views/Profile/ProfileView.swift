@@ -10,30 +10,43 @@ struct ProfileView: View {
     
     var body: some View {
         VStack(spacing: 0) {
-            // Top Safe Area Spacer
-            Color.clear.frame(height: 44)
-            
-            // Drag Handle
-            Capsule()
-                .fill(Color.gray.opacity(0.3))
-                .frame(width: 40, height: 6)
-                .padding(.top, 8)
+
             
             // Header
             HStack {
+                Button(action: onDismiss) {
+                    HStack(spacing: 5) {
+                        Image(systemName: "chevron.left")
+                        Text("Back")
+                    }
+                    .font(.system(size: 16, weight: .bold, design: .monospaced))
+                    .foregroundColor(.cryptoGreen)
+                    .padding(10)
+                }
+                
+                Spacer()
+                
                 Text("AGENT PROFILE")
-                    .font(.system(size: 20, weight: .black, design: .monospaced))
+                    .font(.system(size: 18, weight: .black, design: .monospaced))
                     .foregroundColor(.cryptoText)
                 
                 Spacer()
                 
-                Button(action: onDismiss) {
-                    Image(systemName: "xmark.circle.fill")
-                        .font(.title2)
-                        .foregroundColor(.gray.opacity(0.5))
+                // Hidden placeholder for alignment
+                Button(action: {}) {
+                    HStack(spacing: 5) {
+                        Image(systemName: "chevron.left")
+                        Text("Back")
+                    }
+                    .font(.system(size: 16, weight: .bold, design: .monospaced))
+                    .padding(10)
                 }
+                .opacity(0)
             }
-            .padding()
+            .padding(.horizontal)
+            .padding(.bottom, 15)
+            .padding(.top, 50)
+            .background(Color.white.edgesIgnoringSafeArea(.top))
             
             ScrollView {
                 VStack(spacing: 25) {
@@ -105,8 +118,13 @@ struct ProfileView: View {
                     // Stats Grid
                     LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())], spacing: 15) {
                         StatCard(title: "COINS", value: "\(viewModel.playerStats.coins)", icon: "centsign.circle.fill", color: .yellow)
+                            .onboardingTarget(.statCoins)
+                        
                         StatCard(title: "MISSIONS", value: "\(viewModel.playerStats.levelsCompleted)", icon: "checklist", color: .cryptoGreen)
+                            .onboardingTarget(.statMissions)
+                        
                         StatCard(title: "XP", value: "\(viewModel.playerStats.experience)", icon: "bolt.fill", color: .orange)
+                            .onboardingTarget(.statXP)
                         
                         Button(action: { viewModel.isShowingRiddleView = true }) {
                             StatCard(title: "RIDDLES", value: "\(viewModel.playerStats.completedRiddles.count)", icon: "brain.head.profile", color: .cryptoPurple)
@@ -114,23 +132,40 @@ struct ProfileView: View {
                         .onboardingTarget(.profileRiddles) // Track Riddles Button
                     }
                     .padding(.horizontal)
-                    .onboardingTarget(.profileStats) // Track Stats Grid
                     
                     // Progress Section
                     VStack(alignment: .leading, spacing: 10) {
+                        let currentXP = viewModel.playerStats.experience
+                        let riddleMilestones = [500, 1000, 2000, 3000]
+                        let nextMilestone = riddleMilestones.first(where: { $0 > currentXP }) ?? 3000
+                        let prevMilestone = riddleMilestones.last(where: { $0 <= currentXP }) ?? 0
+                        
+                        let progress = nextMilestone > prevMilestone ? Double(currentXP - prevMilestone) / Double(nextMilestone - prevMilestone) : 1.0
+                        let isAllMaxed = currentXP >= 3000
+                        
+                        let nextUnlockName: String = {
+                            switch nextMilestone {
+                            case 500: return "SYSTEM ARCHITECT"
+                            case 1000: return "CYBER SENTINEL"
+                            case 2000: return "SECURITY MASTER"
+                            case 3000: return currentXP >= 3000 ? "GRAND MASTER" : "GRAND MASTER"
+                            default: return ""
+                            }
+                        }()
+
                         HStack {
-                            Text("LEVEL PROGRESS")
-                                .font(.system(size: 12, weight: .bold, design: .monospaced))
+                            Text(isAllMaxed ? "FULL SYSTEM CLEARANCE" : "NEXT RIDDLE TO UNLOCK: \(nextUnlockName)")
+                                .font(.system(size: 11, weight: .bold, design: .monospaced))
                                 .foregroundColor(.cryptoSubtext)
                             Spacer()
-                            Text("\(viewModel.playerStats.experience % 50)/50 XP")
-                                .font(.system(size: 12, design: .monospaced))
+                            Text(isAllMaxed ? "MAXED" : "\(currentXP)/\(nextMilestone) XP")
+                                .font(.system(size: 11, design: .monospaced))
                                 .foregroundColor(.cryptoPurple)
                         }
                         
-                        ProgressView(value: Double(viewModel.playerStats.experience % 50), total: 50)
+                        ProgressView(value: isAllMaxed ? 1.0 : progress, total: 1.0)
                             .accentColor(.cryptoPurple)
-                            .scaleEffect(x: 1, y: 2, anchor: .center)
+                            .scaleEffect(x: 1, y: 1.5, anchor: .center)
                     }
                     .padding()
                     .background(Color.white.opacity(0.5))
@@ -144,8 +179,13 @@ struct ProfileView: View {
                             .foregroundColor(.cryptoText)
                             .padding(.horizontal)
                         
-                        ScrollView(.horizontal, showsIndicators: false) {
-                            HStack(spacing: 20) {
+                        // Static Badge Collection
+                        VStack {
+                            let columns = [
+                                GridItem(.adaptive(minimum: 70, maximum: 70), spacing: 20)
+                            ]
+                            
+                            LazyVGrid(columns: columns, spacing: 20) {
                                 if viewModel.playerStats.hasDeveloperBadge {
                                     DeveloperBadgeView()
                                         .scaleEffect(0.35)
@@ -158,15 +198,37 @@ struct ProfileView: View {
                                         .frame(width: 70, height: 70)
                                 }
                                 
-                                if !viewModel.playerStats.hasDeveloperBadge && !viewModel.playerStats.hasArchitectBadge {
-                                    Text("Complete riddles to earn badges.")
-                                        .font(.caption)
-                                        .foregroundColor(.gray)
-                                        .italic()
-                                        .padding(.vertical, 10)
+                                if viewModel.playerStats.hasSentinelBadge {
+                                    CyberSentinelBadgeView()
+                                        .scaleEffect(0.35)
+                                        .frame(width: 70, height: 70)
+                                }
+                                
+                                if viewModel.playerStats.hasSecurityBadge {
+                                    SecurityMasterBadgeView()
+                                        .scaleEffect(0.35)
+                                        .frame(width: 70, height: 70)
+                                }
+                                
+                                if viewModel.playerStats.hasGrandMasterBadge {
+                                    GrandMasterBadgeView()
+                                        .scaleEffect(0.35)
+                                        .frame(width: 70, height: 70)
                                 }
                             }
                             .padding(.horizontal)
+                            
+                            if !viewModel.playerStats.hasDeveloperBadge && 
+                               !viewModel.playerStats.hasArchitectBadge &&
+                               !viewModel.playerStats.hasSentinelBadge &&
+                               !viewModel.playerStats.hasSecurityBadge &&
+                               !viewModel.playerStats.hasGrandMasterBadge {
+                                Text("Complete riddles to earn badges.")
+                                    .font(.system(size: 12, design: .monospaced))
+                                    .foregroundColor(.cryptoSubtext)
+                                    .italic()
+                                    .padding(.top, 5)
+                            }
                         }
                     }
                     .padding(.vertical)
@@ -175,11 +237,8 @@ struct ProfileView: View {
                 }
             }
         }
-        .background(.ultraThinMaterial)
-        .background(Color.cryptoNavy.opacity(0.8))
-        .cornerRadius(30, corners: [.topLeft, .topRight])
-        .shadow(color: Color.black.opacity(0.15), radius: 15, x: 0, y: -5)
-        .edgesIgnoringSafeArea(.bottom)
+        .background(Color.white)
+        .edgesIgnoringSafeArea(.all)
         .sheet(isPresented: $viewModel.isShowingRiddleView) {
             RiddleMenuView(viewModel: viewModel, onDismiss: { viewModel.isShowingRiddleView = false })
         }

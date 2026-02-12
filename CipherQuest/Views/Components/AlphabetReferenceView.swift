@@ -2,6 +2,7 @@
 import SwiftUI
 
 struct AlphabetReferenceView: View {
+    let cipherType: CipherType?
     let onDismiss: () -> Void
     
     let alphabet = Array("ABCDEFGHIJKLMNOPQRSTUVWXYZ")
@@ -22,7 +23,7 @@ struct AlphabetReferenceView: View {
             
             // Header
             HStack {
-                Text("ALPHABET INDEX")
+                Text(cipherType == .atbash ? "ATBASH INDEX" : "ALPHABET INDEX")
                     .font(.system(size: 18, weight: .black, design: .monospaced))
                     .foregroundColor(.cryptoText)
                 
@@ -30,8 +31,8 @@ struct AlphabetReferenceView: View {
                 
                 Button(action: onDismiss) {
                     Image(systemName: "xmark.circle.fill")
-                        .font(.title2)
-                        .foregroundColor(.gray.opacity(0.5))
+                    .font(.title2)
+                    .foregroundColor(.gray.opacity(0.5))
                 }
             }
             .padding()
@@ -44,19 +45,33 @@ struct AlphabetReferenceView: View {
                                 .font(.system(size: 22, weight: .bold, design: .monospaced))
                                 .foregroundColor(.cryptoGreen)
                             
-                            HStack(spacing: 6) {
-                                Text(String(format: "%02d", index + 1))
-                                    .font(.system(size: 13, weight: .bold, design: .monospaced))
-                                    .foregroundColor(.cryptoPurple)
-                                
-                                Text(String(format: "%02d", 26 - index))
-                                    .font(.system(size: 11, weight: .medium, design: .monospaced))
-                                    .foregroundColor(.cryptoSubtext.opacity(0.6))
+                            if cipherType == .atbash {
+                                // Atbash: Show Reverse Mapping (A -> Z)
+                                VStack(spacing: 2) {
+                                    Text(String(alphabet[25 - index]))
+                                        .font(.system(size: 22, weight: .bold, design: .monospaced))
+                                        .foregroundColor(.cryptoPurple)
+                                }
+                                .padding(.horizontal, 6)
+                                .padding(.vertical, 4)
+                                .background(Color.cryptoPurple.opacity(0.1))
+                                .cornerRadius(4)
+                            } else {
+                                // Standard: Show Indices
+                                HStack(spacing: 6) {
+                                    Text(String(format: "%02d", index + 1))
+                                        .font(.system(size: 13, weight: .bold, design: .monospaced))
+                                        .foregroundColor(.cryptoPurple)
+                                    
+                                    Text(String(format: "%02d", 26 - index))
+                                        .font(.system(size: 11, weight: .medium, design: .monospaced))
+                                        .foregroundColor(.cryptoSubtext.opacity(0.6))
+                                }
+                                .padding(.horizontal, 6)
+                                .padding(.vertical, 2)
+                                .background(Color.cryptoPurple.opacity(0.1))
+                                .cornerRadius(4)
                             }
-                            .padding(.horizontal, 6)
-                            .padding(.vertical, 2)
-                            .background(Color.cryptoPurple.opacity(0.1))
-                            .cornerRadius(4)
                         }
                         .frame(maxWidth: .infinity)
                         .padding(.vertical, 12)
@@ -69,7 +84,7 @@ struct AlphabetReferenceView: View {
                 .padding(.bottom, 20)
             }
             
-            Text("MISSION INTEL: DUAL INDEX (1-26 & 26-1) MAP")
+            Text(cipherType == .atbash ? "MISSION INTEL: ATBASH REFLECTION MAP" : "MISSION INTEL: DUAL INDEX (1-26 & 26-1) MAP")
                 .font(.system(size: 10, weight: .bold, design: .monospaced))
                 .foregroundColor(.cryptoSubtext)
                 .padding(.bottom, 30)

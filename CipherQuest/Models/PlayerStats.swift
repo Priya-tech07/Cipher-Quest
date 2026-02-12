@@ -11,10 +11,13 @@ struct PlayerStats: Codable {
     var completedRiddles: [Int] = []
     var hasDeveloperBadge: Bool = false
     var hasArchitectBadge: Bool = false
+    var hasSentinelBadge: Bool = false
+    var hasSecurityBadge: Bool = false
+    var hasGrandMasterBadge: Bool = false
     var hasSeenOnboarding: Bool = false
     
     enum CodingKeys: String, CodingKey {
-        case agentName, coins, levelsCompleted, hintsUsed, currentLevelIndex, experience, completedRiddles, hasDeveloperBadge, hasArchitectBadge, hasSeenOnboarding
+        case agentName, coins, levelsCompleted, hintsUsed, currentLevelIndex, experience, completedRiddles, hasDeveloperBadge, hasArchitectBadge, hasSentinelBadge, hasSecurityBadge, hasGrandMasterBadge, hasSeenOnboarding
     }
     
     init() {}
@@ -30,6 +33,9 @@ struct PlayerStats: Codable {
         completedRiddles = try container.decodeIfPresent([Int].self, forKey: .completedRiddles) ?? []
         hasDeveloperBadge = try container.decodeIfPresent(Bool.self, forKey: .hasDeveloperBadge) ?? false
         hasArchitectBadge = try container.decodeIfPresent(Bool.self, forKey: .hasArchitectBadge) ?? false
+        hasSentinelBadge = try container.decodeIfPresent(Bool.self, forKey: .hasSentinelBadge) ?? false
+        hasSecurityBadge = try container.decodeIfPresent(Bool.self, forKey: .hasSecurityBadge) ?? false
+        hasGrandMasterBadge = try container.decodeIfPresent(Bool.self, forKey: .hasGrandMasterBadge) ?? false
         hasSeenOnboarding = try container.decodeIfPresent(Bool.self, forKey: .hasSeenOnboarding) ?? false
     }
     

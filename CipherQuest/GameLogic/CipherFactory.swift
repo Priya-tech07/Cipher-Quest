@@ -10,9 +10,9 @@ protocol Cipher {
 class CipherFactory {
     static func getCipher(for type: CipherType) -> Cipher {
         switch type {
+        case .atbash: return AtbashCipher()
         case .caesar: return CaesarCipher()
         case .vigenere: return VigenereCipher()
-        case .playfair: return PlayfairCipher()
         }
     }
 }

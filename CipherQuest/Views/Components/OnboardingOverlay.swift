@@ -3,10 +3,10 @@ import SwiftUI
 
 struct OnboardingOverlay: View {
     @ObservedObject var viewModel: GameViewModel
+    var targetFrames: [HighlightArea: CGRect] = [:]
     @State private var currentStep = 0
     @State private var arrowOffset: CGFloat = 0
     @State private var agentNameInput: String = ""
-    @State private var targetFrames: [HighlightArea: CGRect] = [:]
     
     private let steps = [
         OnboardingStep(
@@ -15,7 +15,7 @@ struct OnboardingOverlay: View {
             icon: "shield.fill",
             color: .cryptoGreen
         ),
-        OnboardingStep( // Index 1: Registration
+        OnboardingStep(
             title: "IDENTITY REGISTRATION",
             description: "Enter your codename, Agent. This will be your identifier in the field.",
             icon: "person.text.rectangle.fill",
@@ -29,13 +29,27 @@ struct OnboardingOverlay: View {
             color: .cryptoGreen,
             highlightArea: .topRight
         ),
+        // Breakdown of Agent Stats
         OnboardingStep(
-            title: "AGENT STATS",
-            description: "Monitor your Coins, Mission progress, and XP right here.",
+            title: "AMASSED FORTUNE",
+            description: "Earn coins by solving ciphers. Use them to unlock hints.",
+            icon: "centsign.circle.fill",
+            color: .yellow,
+            highlightArea: .statCoins
+        ),
+        OnboardingStep(
+            title: "MISSION LOG",
+            description: "Track the number of operations you've successfully completed.",
+            icon: "checklist",
+            color: .cryptoGreen,
+            highlightArea: .statMissions
+        ),
+        OnboardingStep(
+            title: "EXPERIENCE LEVEL",
+            description: "Gain XP to level up your clearance and prove your skills.",
             icon: "bolt.fill",
             color: .orange,
-            highlightArea: .profileStats,
-            action: { vm in vm.isShowingProfile = true }
+            highlightArea: .statXP
         ),
         OnboardingStep(
             title: "RECOVERED RIDDLES",
@@ -49,15 +63,29 @@ struct OnboardingOverlay: View {
             description: "If you're ever stuck, use the 'How to Solve' section for tactical intelligence on any cipher.",
             icon: "questionmark.circle.fill",
             color: .cryptoPurple,
-            highlightArea: .bottom,
-            action: { vm in vm.isShowingProfile = false }
+            highlightArea: .bottom
+        ),
+        // Breakdown of Mission Selection
+        OnboardingStep(
+            title: "BASIC TRAINING",
+            description: "Start here. Isolate and decode simple substitution ciphers like Atbash.",
+            icon: "arrow.right.circle.fill",
+            color: .cryptoBlue,
+            highlightArea: .missionEasy
         ),
         OnboardingStep(
-            title: "SELECT MISSION",
-            description: "Choose your level of engagement. Easy for training, Hard for experienced cryptographers.",
-            icon: "flag.fill",
-            color: .cryptoBlue,
-            highlightArea: .center
+            title: "ADVANCED OPS",
+            description: "Test your skills against the Caesar cipher. Shift patterns are key.",
+            icon: "shield.righthalf.filled",
+            color: .cryptoGreen,
+            highlightArea: .missionHard
+        ),
+        OnboardingStep(
+            title: "BLACK OPS",
+            description: "The ultimate test. Polyalphabetic Vigenère ciphers await.",
+            icon: "exclamationmark.triangle.fill",
+            color: .cryptoText,
+            highlightArea: .missionDifficult
         ),
         OnboardingStep(
             title: "READY TO START?",
@@ -97,9 +125,27 @@ struct OnboardingOverlay: View {
             
             // Instruction Card
             VStack(spacing: 0) {
-                Spacer()
+                if shouldShowCardAtBottom() {
+                     Spacer()
+                }
                 
                 VStack(spacing: 20) {
+                    // Header with Back Button
+                    HStack {
+                        if currentStep > 0 {
+                            Button(action: prevStep) {
+                                Image(systemName: "arrow.left")
+                                    .font(.system(size: 20, weight: .bold))
+                                    .foregroundColor(.white.opacity(0.8))
+                                    .padding(10)
+                                    .background(Color.white.opacity(0.1))
+                                    .clipShape(Circle())
+                            }
+                        }
+                        Spacer()
+                    }
+                    .padding(.bottom, -10) // Pull icon up slightly
+                    
                     Image(systemName: steps[currentStep].icon)
                         .font(.system(size: 50))
                         .foregroundColor(steps[currentStep].color)
@@ -184,15 +230,22 @@ struct OnboardingOverlay: View {
                     )
                 )
                 .padding(.horizontal, 25)
-                // Intelligent positioning to avoid covering the highlight
-                .padding(.bottom, getCardBottomPadding())
-                .padding(.top, getCardTopPadding())
+                .padding(.bottom, shouldShowCardAtBottom() ? 50 : 20)
+                .padding(.top, shouldShowCardAtBottom() ? 0 : 60)
+                
+                 if !shouldShowCardAtBottom() {
+                     Spacer()
+                }
             }
         }
         .animation(.spring(response: 0.5, dampingFraction: 0.75), value: currentStep)
-        .onPreferenceChange(OnboardingPreferenceKey.self) { preferences in
-            self.targetFrames = preferences
+        .onChange(of: currentStep) {
+            updateGameState()
         }
+        .onAppear {
+            updateGameState()
+        }
+
     }
     
     // Helper to extract frame from preferences or fallback
@@ -222,21 +275,35 @@ struct OnboardingOverlay: View {
             return CGRect(x: 20, y: 300, width: geo.size.width - 40, height: 150)
         case .profileRiddles:
              return CGRect(x: geo.size.width/2, y: 400, width: geo.size.width/2 - 20, height: 80)
+        case .statCoins, .statMissions, .statXP:
+             return CGRect(x: 20, y: 300, width: (geo.size.width - 45)/2, height: 100)
+        case .missionEasy, .missionHard, .missionDifficult:
+             return CGRect(x: 40, y: geo.size.height/2, width: geo.size.width - 80, height: 60)
         }
     }
     
-    private func getCardBottomPadding() -> CGFloat {
-        guard let highlight = steps[currentStep].highlightArea else { return 50 }
-        if highlight == .bottom { return 200 }
-        return 50
+    private func shouldShowCardAtBottom() -> Bool {
+        guard let highlight = steps[currentStep].highlightArea else { return true }
+        
+        // If highlighting bottom or stats (middle-ish), show card at TOP
+        // Stats: Coins, Missions, XP, Riddles
+        // Missions: Easy, Hard, Difficult (These are in the bottom half of home screen)
+        switch highlight {
+        case .bottom, .center, .profileStats, .profileRiddles,
+             .statCoins, .statMissions, .statXP,
+             .missionEasy, .missionHard, .missionDifficult:
+            return false
+        default:
+            return true
+        }
     }
     
-     private func getCardTopPadding() -> CGFloat {
-        guard let highlight = steps[currentStep].highlightArea else { return 0 }
-        if highlight == .topRight { return 120 }
-        return 0
+    private func prevStep() {
+        if currentStep > 0 {
+            currentStep -= 1
+        }
     }
-    
+
     private func nextStep() {
         // Save Name Logic
         if currentStep == 1 {
@@ -247,11 +314,28 @@ struct OnboardingOverlay: View {
     
         if currentStep < steps.count - 1 {
             currentStep += 1
-            // Execute step action if any
-            steps[currentStep].action?(viewModel)
         } else {
             withAnimation {
                 viewModel.completeOnboarding()
+            }
+        }
+    }
+    
+    private func updateGameState() {
+        // Enforce state based on current step
+        // Steps 3, 4, 5, 6 require Profile View to be OPEN
+        if [3, 4, 5, 6].contains(currentStep) {
+            if !viewModel.isShowingProfile {
+                withAnimation {
+                    viewModel.isShowingProfile = true
+                }
+            }
+        } else {
+            // All other steps require Profile View to be CLOSED
+            if viewModel.isShowingProfile {
+                withAnimation {
+                    viewModel.isShowingProfile = false
+                }
             }
         }
     }
@@ -266,7 +350,7 @@ struct HighlightMask: Shape {
         var path = Path(fullscreen) // Full screen box
         
         // Add padding/rounded corners to the cutout
-        let padding: CGFloat = 8
+        let padding: CGFloat = 16
         let cutoutRect = targetFrame.insetBy(dx: -padding, dy: -padding)
         let cutout = Path(roundedRect: cutoutRect, cornerRadius: 16)
         
@@ -323,7 +407,6 @@ struct OnboardingStep {
     let icon: String
     let color: Color
     var highlightArea: HighlightArea? = nil
-    var action: ((GameViewModel) -> Void)? = nil
 }
 
 // Helper for Glassmorphism

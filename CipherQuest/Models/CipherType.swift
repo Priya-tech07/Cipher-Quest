@@ -2,31 +2,60 @@
 import Foundation
 
 enum CipherType: String, CaseIterable, Codable {
+    case atbash = "Atbash Cipher"
     case caesar = "Caesar Cipher"
     case vigenere = "Vigenère Cipher"
-    case playfair = "Playfair Cipher"
     
     var description: String {
         switch self {
+        case .atbash: return "Reverse the alphabet (A↔Z, B↔Y)."
         case .caesar: return "Shift letters by a fixed number."
         case .vigenere: return "Use a keyword to shift letters."
-        case .playfair: return "Digraph substitution using a grid."
         }
     }
     
     var difficulty: Int {
         switch self {
-        case .caesar: return 1
-        case .vigenere: return 2
-        case .playfair: return 3
+        case .atbash: return 1
+        case .caesar: return 2
+        case .vigenere: return 3
         }
     }
     
     var rules: String {
         switch self {
+        case .atbash:
+            return """
+            🟢 **1) Atbash Cipher (Beginner)**
+            
+            🧠 **Idea**
+            The Atbash cipher maps the alphabet to its reverse.
+            First letter becomes the last, second becomes second-to-last, etc.
+            
+            **Mapping**
+            A ↔ Z
+            B ↔ Y
+            C ↔ X
+            ...
+            M ↔ N
+            
+            🔐 **Encryption & Decryption**
+            It is symmetric! Applying it twice gives back the original message.
+            
+            **Example**:
+            Message: HELLO
+            H ↔ S
+            E ↔ V
+            L ↔ O
+            L ↔ O
+            O ↔ L
+            Result: SVOOL
+            
+            👉 Easiest cipher. No key needed.
+            """
         case .caesar:
             return """
-            🟢 **1) Caesar Cipher (Beginner)**
+            🟡 **2) Caesar Cipher (Intermediate)**
             
             🧠 **Idea**
             Shift every letter in the message by a fixed number in the alphabet.
@@ -53,11 +82,11 @@ enum CipherType: String, CaseIterable, Codable {
             Shift backwards.
             Plain = (Encrypted − Shift + 26) mod 26
             
-            👉 Easy, fast, beginner level.
+            👉 Classic and reliable.
             """
         case .vigenere:
             return """
-            🟡 **2) Vigenère Cipher (Intermediate)**
+            🔴 **3) Vigenère Cipher (Advanced)**
             
             🧠 **Idea**
             Instead of one fixed shift, we use a keyword that changes the shift for every letter.
@@ -83,50 +112,7 @@ enum CipherType: String, CaseIterable, Codable {
             🔓 **Decryption**
             Plain = (Encrypted − Key + 26) mod 26
             
-            👉 Smarter than Caesar because shift keeps changing.
-            """
-        case .playfair:
-            return """
-            🔴 **3) Playfair Cipher (Advanced)**
-            
-            This one is FUN and puzzle-like 🧩
-            Instead of single letters, we encrypt pairs of letters.
-            
-            **Step 1** — Create 5×5 Grid Using Keyword
-            Keyword example: MONARCHY
-            Fill grid (I & J share one box):
-            M O N A R
-            C H Y B D
-            E F G I K
-            L P Q S T
-            U V W X Z
-            
-            **Step 2** — Prepare Message
-            Rules:
-            - Remove spaces
-            - Replace J → I
-            - Split into pairs
-            - Add X if needed
-            Example: HIDE GOLD → HI DE GO LD
-            
-            **Step 3** — Apply 3 Rules
-            Rule 1 — Same Row → Move RIGHT
-            Example: MO → ON
-            
-            Rule 2 — Same Column → Move DOWN
-            Example: MU → CM
-            
-            Rule 3 — Rectangle Rule 🔲 (Most common rule)
-            Take letters at the other corners of rectangle.
-            Example: HI → BF
-            
-            🔓 **Decryption**
-            Reverse directions:
-            - Same row → move LEFT
-            - Same column → move UP
-            - Rectangle rule same
-            
-            👉 This cipher feels like solving a puzzle.
+            👉 The "Unbreakable" Cipher (historically).
             """
         }
     }

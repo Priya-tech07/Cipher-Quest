@@ -16,6 +16,7 @@ class GameViewModel: ObservableObject {
     // Track attempts
     var attempts: Int = 0
     @Published var lastEarnedCoins: Int = 0
+    @Published var lastEarnedXP: Int = 0
     
     // Track the current game mode to ensure continuity
     @Published var currentGameMode: GameMode = .story
@@ -23,20 +24,23 @@ class GameViewModel: ObservableObject {
     // Track which daily challenge date is being played
     var playingDate: Date?
     
-    enum HintState {
+    enum HintState: Equatable {
         case none
         case clue
-        case reveal
-        case secondLetter
-        case fullyRevealed
+        case revealed(count: Int)
         
         var cost: Int {
             switch self {
             case .none: return 5
             case .clue: return 10
-            case .reveal: return 30
-            case .secondLetter: return 0
-            case .fullyRevealed: return 0
+            case .revealed(let count):
+                if count == 1 { return 30 }
+                if count == 2 { return 50 }
+                // Pattern: 80, 100, 120... starting from count 3 (going to 4th letter)
+                // Wait, count 3 is currently revealed 3 letters. Next cost is for 4th letter.
+                // User said "next 80".
+                // If count=3, we want 80.
+                return 80 + (count - 3) * 20
             }
         }
     }
@@ -117,8 +121,8 @@ class GameViewModel: ObservableObject {
     func startPractice(difficulty: String) {
         var type: CipherType = .caesar
         // Hard Mission: Strictly Vigenere only
-        if difficulty == "HARD" { type = .vigenere }
-        if difficulty == "DIFFICULT" { type = .playfair }
+        if difficulty == "HARD" { type = .caesar }
+        if difficulty == "DIFFICULT" { type = .vigenere }
         startGame(mode: .practice, preferredType: type)
     }
 
@@ -156,22 +160,29 @@ class GameViewModel: ObservableObject {
     private func handleSuccess() {
         guard let level = currentLevel else { return }
         
-        playerStats.levelsCompleted += 1
-        playerStats.experience += 50
-        
         // Calculate reward based on attempts
         let earnedCoins: Int
+        let earnedXP: Int
+        
         if attempts == 0 {
             earnedCoins = 50
+            earnedXP = 50
         } else if attempts == 1 {
             earnedCoins = 35
+            earnedXP = 30
         } else if attempts == 2 {
             earnedCoins = 20
+            earnedXP = 15
         } else {
             earnedCoins = 10
+            earnedXP = 5
         }
         
+        playerStats.levelsCompleted += 1
+        playerStats.experience += earnedXP
+        
         self.lastEarnedCoins = earnedCoins
+        self.lastEarnedXP = earnedXP
         
         // Handle Game Mode specifics
         if gameState == .playing {
@@ -216,26 +227,26 @@ class GameViewModel: ObservableObject {
             return
         }
         
-        guard hintState != .secondLetter && hintState != .fullyRevealed else { return }
+        // Stop if fully revealed (count >= plaintext length)
+        if case .revealed(let count) = hintState, let level = currentLevel, count >= level.plaintext.count {
+             return
+        }
         
         playerStats.coins -= cost
         playerStats.hintsUsed += 1
+        
+        guard let level = currentLevel else { return }
         
         switch hintState {
         case .none:
             hintState = .clue
         case .clue:
-            hintState = .reveal
-            if let level = currentLevel {
-                 userInput = String(level.plaintext.prefix(1))
-            }
-        case .reveal:
-             hintState = .secondLetter
-             if let level = currentLevel {
-                  userInput = String(level.plaintext.prefix(2))
-             }
-        case .secondLetter, .fullyRevealed:
-            break
+            hintState = .revealed(count: 1)
+            userInput = String(level.plaintext.prefix(1))
+        case .revealed(let count):
+             let newCount = count + 1
+             hintState = .revealed(count: newCount)
+             userInput = String(level.plaintext.prefix(newCount))
         }
     }
     
