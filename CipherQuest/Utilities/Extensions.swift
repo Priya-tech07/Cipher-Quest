@@ -3,24 +3,24 @@ import SwiftUI
 
 extension Color {
     // Backgrounds
-    static let cryptoDarkBlue = Color(hex: "FFFFFF") // White background
-    static let cryptoNavy = Color(hex: "F0F4F8") // Light Blue-Grey for gradients
-    static let cryptoLightNavy = Color(hex: "D9E2EC") // Slightly darker for cards
+    static var cryptoDarkBlue: Color { Color(hex: ThemeManager.shared.currentPalette.cryptoDarkBlue) }
+    static var cryptoNavy: Color { Color(hex: ThemeManager.shared.currentPalette.cryptoNavy) }
+    static var cryptoLightNavy: Color { Color(hex: ThemeManager.shared.currentPalette.cryptoLightNavy) }
     
-    // Accents (Remapped to Blue/White Scheme)
-    static let cryptoGreen = Color(hex: "007AFF") // Bright Blue (Primary Action)
-    static let cryptoPurple = Color(hex: "5856D6") // Indigo (Secondary Action) - Kept as is, it's bluish
-    static let cryptoPink = Color(hex: "82AAFF") // Light Blue (Tertiary)
-    static let cryptoYellow = Color(hex: "FFD700") // Gold (Coins/Hints)
-    static let cryptoBlue = Color(hex: "5AC8FA") // Light Blue
+    // Accents
+    static var cryptoGreen: Color { Color(hex: ThemeManager.shared.currentPalette.cryptoGreen) }
+    static var cryptoPurple: Color { Color(hex: ThemeManager.shared.currentPalette.cryptoPurple) }
+    static var cryptoPink: Color { Color(hex: ThemeManager.shared.currentPalette.cryptoPink) }
+    static var cryptoYellow: Color { Color(hex: ThemeManager.shared.currentPalette.cryptoYellow) }
+    static var cryptoBlue: Color { Color(hex: ThemeManager.shared.currentPalette.cryptoBlue) }
     
     // Text
-    static let cryptoText = Color(hex: "102A43") // Dark Blue/Black for text
-    static let cryptoSubtext = Color(hex: "486581") // Muted Blue for subtext
+    static var cryptoText: Color { Color(hex: ThemeManager.shared.currentPalette.cryptoText) }
+    static var cryptoSubtext: Color { Color(hex: ThemeManager.shared.currentPalette.cryptoSubtext) }
     
     // UI Elements
-    static let cryptoSurface = Color(hex: "BCCCDC") // Surface elements
-    static let cryptoError = Color(hex: "D0021B") // Red
+    static var cryptoSurface: Color { Color(hex: ThemeManager.shared.currentPalette.cryptoSurface) }
+    static var cryptoError: Color { Color(hex: ThemeManager.shared.currentPalette.cryptoError) }
     
     init(hex: String) {
         let hex = hex.trimmingCharacters(in: CharacterSet.alphanumerics.inverted)

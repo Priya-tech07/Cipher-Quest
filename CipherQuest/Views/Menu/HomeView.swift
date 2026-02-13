@@ -7,7 +7,7 @@ struct HomeView: View {
     var body: some View {
         ZStack {
             // Background
-            Color.white.edgesIgnoringSafeArea(.all)
+            Color.cryptoDarkBlue.edgesIgnoringSafeArea(.all)
             
             // Decorative Circles
             Circle()
@@ -32,7 +32,7 @@ struct HomeView: View {
                                 Text(viewModel.playerStats.agentName)
                                     .font(.system(size: 8, weight: .bold, design: .monospaced))
                                     .foregroundColor(.cryptoSubtext)
-                                Text("LVL \(viewModel.playerStats.level())")
+                                Text("LVL \(viewModel.playerStats.currentLevelIndex + 1)")
                                     .font(.system(size: 12, weight: .black, design: .monospaced))
                                     .foregroundColor(.cryptoGreen)
                             }
@@ -43,7 +43,7 @@ struct HomeView: View {
                         }
                         .padding(.horizontal, 12)
                         .padding(.vertical, 8)
-                        .background(Color.white.opacity(0.8))
+                        .background(Color.cryptoSurface.opacity(0.8))
                         .cornerRadius(20)
                         .shadow(color: Color.black.opacity(0.05), radius: 5, x: 0, y: 2)
                     }
@@ -81,17 +81,17 @@ struct HomeView: View {
                 VStack(spacing: 20) {
                     // Difficulty Selection
                     MenuButton(title: "EASY MISSION", icon: "arrow.right.circle.fill", color: .cryptoBlue, textColor: .white) {
-                         withAnimation { viewModel.startGame(mode: .story) }
+                         withAnimation { viewModel.showCategorySelection(mode: .story) }
                     }
                     .onboardingTarget(.missionEasy)
                     
                     MenuButton(title: "HARD MISSION", icon: "shield.righthalf.filled", color: .cryptoGreen, textColor: .white) {
-                         withAnimation { viewModel.startPractice(difficulty: "HARD") }
+                         withAnimation { viewModel.showCategorySelection(mode: .practice, preferredType: .caesar) }
                     }
                     .onboardingTarget(.missionHard)
                     
-                    MenuButton(title: "DIFFICULT MISSION", icon: "exclamationmark.triangle.fill", color: .cryptoText, textColor: .white) { // Darker for extra hard
-                         withAnimation { viewModel.startPractice(difficulty: "DIFFICULT") }
+                    MenuButton(title: "DIFFICULT MISSION", icon: "exclamationmark.triangle.fill", color: .cryptoPurple, textColor: .white) { // Changed to Purple for visibility
+                         withAnimation { viewModel.showCategorySelection(mode: .practice, preferredType: .vigenere) }
                     }
                     .onboardingTarget(.missionDifficult)
                 }
@@ -131,10 +131,10 @@ struct HomeView: View {
                     }
                     .padding()
                     .background(
-                        LinearGradient(gradient: Gradient(colors: [Color.cryptoGreen, Color.cryptoText]), startPoint: .leading, endPoint: .trailing)
+                        LinearGradient(gradient: Gradient(colors: [Color(hex: "007AFF"), Color(hex: "102A43")]), startPoint: .leading, endPoint: .trailing)
                     )
                     .cornerRadius(15)
-                    .shadow(color: .cryptoText.opacity(0.3), radius: 8, x: 0, y: 4)
+                    .shadow(color: Color.black.opacity(0.3), radius: 8, x: 0, y: 4)
                 }
                 .padding(.horizontal, 40)
                 .disabled(false) // DailyChallengeManager.shared.isChallengeCompletedToday
@@ -167,6 +167,41 @@ struct HomeView: View {
                         .foregroundColor(.gray)
                 }
                 .padding(.bottom, 60)
+            }
+            
+            // Overlays
+            if viewModel.gameState == .categorySelect {
+                CategorySelectionView(viewModel: viewModel)
+                    .transition(.move(edge: .bottom))
+                    .zIndex(2)
+            }
+            
+            if viewModel.gameState == .calendar {
+                CalendarView(viewModel: viewModel)
+                    .transition(.move(edge: .bottom))
+                    .zIndex(2)
+            }
+            
+            if viewModel.isShowingProfile {
+                ProfileView(viewModel: viewModel, onDismiss: {
+                    withAnimation { viewModel.isShowingProfile = false }
+                })
+                .transition(.move(edge: .trailing))
+                .zIndex(3)
+            }
+            
+            if viewModel.isShowingHowToSolve {
+                HowToSolveView(cipherType: nil, onDismiss: {
+                    withAnimation { viewModel.isShowingHowToSolve = false }
+                })
+                    .transition(.move(edge: .bottom))
+                    .zIndex(4)
+            }
+            
+            if viewModel.isShowingOnboarding {
+               OnboardingView(viewModel: viewModel)
+                   .transition(.opacity)
+                   .zIndex(5)
             }
         }
     }

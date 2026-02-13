@@ -13,6 +13,8 @@ struct AlphabetReferenceView: View {
         GridItem(.flexible())
     ]
     
+    @State private var dragOffset = CGSize.zero
+    
     var body: some View {
         VStack(spacing: 0) {
             // Drag Handle
@@ -23,7 +25,7 @@ struct AlphabetReferenceView: View {
             
             // Header
             HStack {
-                Text(cipherType == .atbash ? "ATBASH INDEX" : "ALPHABET INDEX")
+                Text(cipherType == .atbash ? "ATBASH INDEX" : (cipherType == .vigenere ? "VIGENÈRE INDEX" : "ALPHABET INDEX"))
                     .font(.system(size: 18, weight: .black, design: .monospaced))
                     .foregroundColor(.cryptoText)
                 
@@ -56,6 +58,17 @@ struct AlphabetReferenceView: View {
                                 .padding(.vertical, 4)
                                 .background(Color.cryptoPurple.opacity(0.1))
                                 .cornerRadius(4)
+                            } else if cipherType == .vigenere {
+                                // Vigenère: Show 0-based Index (0-25)
+                                HStack(spacing: 6) {
+                                    Text(String(format: "%02d", index))
+                                        .font(.system(size: 13, weight: .bold, design: .monospaced))
+                                        .foregroundColor(.cryptoPurple)
+                                }
+                                .padding(.horizontal, 6)
+                                .padding(.vertical, 2)
+                                .background(Color.cryptoPurple.opacity(0.1))
+                                .cornerRadius(4)
                             } else {
                                 // Standard: Show Indices
                                 HStack(spacing: 6) {
@@ -84,7 +97,7 @@ struct AlphabetReferenceView: View {
                 .padding(.bottom, 20)
             }
             
-            Text(cipherType == .atbash ? "MISSION INTEL: ATBASH REFLECTION MAP" : "MISSION INTEL: DUAL INDEX (1-26 & 26-1) MAP")
+            Text(cipherType == .atbash ? "MISSION INTEL: ATBASH REFLECTION MAP" : (cipherType == .vigenere ? "MISSION INTEL: ZERO-BASED INDEX MAP" : "MISSION INTEL: DUAL INDEX (1-26 & 26-1) MAP"))
                 .font(.system(size: 10, weight: .bold, design: .monospaced))
                 .foregroundColor(.cryptoSubtext)
                 .padding(.bottom, 30)
@@ -93,6 +106,25 @@ struct AlphabetReferenceView: View {
         .background(Color.cryptoNavy.opacity(0.7))
         .cornerRadius(30)
         .shadow(color: Color.black.opacity(0.15), radius: 15, x: 0, y: -5)
+        .padding(.top, 60)
         .edgesIgnoringSafeArea(.bottom)
+        .offset(y: dragOffset.height)
+        .gesture(
+            DragGesture()
+                .onChanged { gesture in
+                    if gesture.translation.height > 0 {
+                        dragOffset = gesture.translation
+                    }
+                }
+                .onEnded { gesture in
+                    if gesture.translation.height > 100 {
+                        onDismiss()
+                    } else {
+                        withAnimation(.spring()) {
+                            dragOffset = .zero
+                        }
+                    }
+                }
+        )
     }
 }

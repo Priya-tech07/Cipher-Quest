@@ -82,7 +82,17 @@ struct HowToSolveView: View {
             if let cipher = selectedCipher {
                 CipherTutorialView(cipherType: cipher, isPresented: Binding(
                     get: { selectedCipher != nil },
-                    set: { if !$0 { selectedCipher = nil } }
+                    set: { isPresented in
+                        if !isPresented {
+                            if cipherType != nil {
+                                // Contextual mode: Dismiss the whole sheet, keep tutorial visible for smooth transition
+                                onDismiss()
+                            } else {
+                                // Menu mode: Just hide tutorial
+                                selectedCipher = nil
+                            }
+                        }
+                    }
                 ))
                 .transition(.move(edge: .trailing))
                 .zIndex(1)

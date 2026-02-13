@@ -20,6 +20,9 @@ class GameViewModel: ObservableObject {
     
     // Track the current game mode to ensure continuity
     @Published var currentGameMode: GameMode = .story
+    @Published var selectedCategory: GameCategory = .coding
+    // Temporary storage for practice mode difficulty/type
+    var pendingPracticeType: CipherType?
     
     // Track which daily challenge date is being played
     var playingDate: Date?
@@ -57,6 +60,7 @@ class GameViewModel: ObservableObject {
         case success
         case failed
         case calendar
+        case categorySelect
     }
     
     init() {
@@ -85,9 +89,20 @@ class GameViewModel: ObservableObject {
         }
     }
     
-    func startGame(mode: GameMode, preferredType: CipherType? = nil, levelIndex: Int? = nil) {
+    func showCategorySelection(mode: GameMode, preferredType: CipherType? = nil) {
+        self.currentGameMode = mode
+        self.pendingPracticeType = preferredType
+        withAnimation {
+            gameState = .categorySelect
+        }
+    }
+    
+    func startGame(mode: GameMode, preferredType: CipherType? = nil, levelIndex: Int? = nil, category: GameCategory? = nil) {
         // Set the current mode
         self.currentGameMode = mode
+        if let cat = category {
+            self.selectedCategory = cat
+        }
         
         // Load level based on stats or mode
         // For story, use currentLevelIndex
@@ -108,8 +123,10 @@ class GameViewModel: ObservableObject {
              }
         }
         
-        loadLevel(index: targetIndex, mode: mode, preferredType: preferredType, seed: seed)
-        gameState = .playing
+        loadLevel(index: targetIndex, mode: mode, preferredType: preferredType, seed: seed, category: self.selectedCategory)
+        withAnimation {
+            gameState = .playing
+        }
     }
     
     func startDailyChallenge(date: Date? = nil) {
@@ -123,10 +140,13 @@ class GameViewModel: ObservableObject {
         // Hard Mission: Strictly Vigenere only
         if difficulty == "HARD" { type = .caesar }
         if difficulty == "DIFFICULT" { type = .vigenere }
+        // For practice, show category selection first? Or directly start?
+        // Let's assume for now we go through category selection for everything via showCategorySelection
+        // But if called directly, we use default category.
         startGame(mode: .practice, preferredType: type)
     }
 
-    func loadLevel(index: Int, mode: GameMode, preferredType: CipherType? = nil, seed: Int? = nil) {
+    func loadLevel(index: Int, mode: GameMode, preferredType: CipherType? = nil, seed: Int? = nil, category: GameCategory = .coding) {
         // Clear state BEFORE loading level to prevent UI glitch
         self.userInput = "" // Reset input
         self.attempts = 0 // Reset attempts
@@ -134,7 +154,7 @@ class GameViewModel: ObservableObject {
         self.hintState = .clue
         
         // Generate and set new level
-        let level = PuzzleGenerator.shared.generateLevel(index: index, mode: mode, preferredType: preferredType, seed: seed)
+        let level = PuzzleGenerator.shared.generateLevel(index: index, mode: mode, preferredType: preferredType, seed: seed, category: category)
         self.currentLevel = level
         self.currentCipher = CipherFactory.getCipher(for: level.cipherType)
         
@@ -214,9 +234,9 @@ class GameViewModel: ObservableObject {
             let type = currentLevel?.cipherType
             // Increment level index
             let nextIndex = (currentLevel?.id ?? 0) + 1
-            startGame(mode: .practice, preferredType: type, levelIndex: nextIndex)
+            startGame(mode: .practice, preferredType: type, levelIndex: nextIndex, category: selectedCategory)
         } else {
-             startGame(mode: currentGameMode)
+             startGame(mode: currentGameMode, category: selectedCategory)
         }
     }
     

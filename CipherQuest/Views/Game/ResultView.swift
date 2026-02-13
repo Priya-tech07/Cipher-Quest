@@ -8,7 +8,7 @@ struct ResultView: View {
     var body: some View {
         ZStack {
             // Background
-            Color.white.edgesIgnoringSafeArea(.all)
+            Color.cryptoDarkBlue.edgesIgnoringSafeArea(.all)
             
             // Dynamic Background (Subtle glow/shapes)
             Circle()
@@ -20,7 +20,7 @@ struct ResultView: View {
                 // Icon
                 ZStack {
                     Circle()
-                        .fill(Color.white)
+                        .fill(Color.cryptoSurface)
                         .frame(width: 150, height: 150)
                         .shadow(color: Color.black.opacity(0.1), radius: 10, x: 0, y: 5)
                     
@@ -136,9 +136,9 @@ struct ResultView: View {
                         .foregroundColor(.white)
                         .padding()
                         .frame(maxWidth: .infinity)
-                        .background(success ? Color.cryptoGreen : Color.cryptoText)
+                        .background(success ? Color.cryptoGreen : Color.cryptoError)
                         .cornerRadius(12)
-                        .shadow(color: (success ? Color.cryptoGreen : Color.cryptoText).opacity(0.3), radius: 10, x: 0, y: 5)
+                        .shadow(color: (success ? Color.cryptoGreen : Color.cryptoError).opacity(0.3), radius: 10, x: 0, y: 5)
                 }
                 .padding(.horizontal, 50)
                 

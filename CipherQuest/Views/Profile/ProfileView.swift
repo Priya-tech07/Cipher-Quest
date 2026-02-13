@@ -3,6 +3,7 @@ import SwiftUI
 
 struct ProfileView: View {
     @ObservedObject var viewModel: GameViewModel
+    @EnvironmentObject var themeManager: ThemeManager
     var onDismiss: () -> Void
     
     @State private var isEditingName = false
@@ -46,7 +47,7 @@ struct ProfileView: View {
             .padding(.horizontal)
             .padding(.bottom, 15)
             .padding(.top, 50)
-            .background(Color.white.edgesIgnoringSafeArea(.top))
+            .background(Color.cryptoDarkBlue.edgesIgnoringSafeArea(.top))
             
             ScrollView {
                 VStack(spacing: 25) {
@@ -71,7 +72,7 @@ struct ProfileView: View {
                                 TextField("AGENT NAME", text: $editingName)
                                     .font(.system(size: 24, weight: .black, design: .monospaced))
                                     .multilineTextAlignment(.center)
-                                    .foregroundColor(Color(white: 0.15))
+                                    .foregroundColor(.cryptoText)
                                     .accentColor(.cryptoGreen)
                                     .submitLabel(.done)
                                     .onSubmit(saveName)
@@ -94,7 +95,7 @@ struct ProfileView: View {
                                 
                                 Text(viewModel.playerStats.agentName)
                                     .font(.system(size: 24, weight: .black, design: .monospaced))
-                                    .foregroundColor(Color(white: 0.15))
+                                    .foregroundColor(.cryptoText)
                                     .multilineTextAlignment(.center)
                                 
                                 Button(action: {
@@ -120,7 +121,7 @@ struct ProfileView: View {
                         StatCard(title: "COINS", value: "\(viewModel.playerStats.coins)", icon: "centsign.circle.fill", color: .yellow)
                             .onboardingTarget(.statCoins)
                         
-                        StatCard(title: "MISSIONS", value: "\(viewModel.playerStats.levelsCompleted)", icon: "checklist", color: .cryptoGreen)
+                        StatCard(title: "LEVEL", value: "\(viewModel.playerStats.currentLevelIndex + 1)", icon: "checklist", color: .cryptoGreen)
                             .onboardingTarget(.statMissions)
                         
                         StatCard(title: "XP", value: "\(viewModel.playerStats.experience)", icon: "bolt.fill", color: .orange)
@@ -168,7 +169,7 @@ struct ProfileView: View {
                             .scaleEffect(x: 1, y: 1.5, anchor: .center)
                     }
                     .padding()
-                    .background(Color.white.opacity(0.5))
+                    .background(Color.cryptoSurface.opacity(0.5))
                     .cornerRadius(15)
                     .padding(.horizontal)
                     
@@ -233,11 +234,34 @@ struct ProfileView: View {
                     }
                     .padding(.vertical)
                     
+                    // Settings Section
+                    VStack(alignment: .leading, spacing: 15) {
+                        Text("SYSTEM SETTINGS")
+                            .font(.system(size: 14, weight: .black, design: .monospaced))
+                            .foregroundColor(.cryptoText)
+                            .padding(.horizontal)
+                        
+                        Toggle(isOn: $themeManager.isDarkMode) {
+                            HStack {
+                                Image(systemName: "moon.fill")
+                                    .foregroundColor(.cryptoPurple)
+                                Text("DARK MODE")
+                                    .font(.system(size: 16, weight: .bold, design: .monospaced))
+                                    .foregroundColor(.cryptoText)
+                            }
+                        }
+                        .padding()
+                        .background(Color.cryptoSurface.opacity(0.3))
+                        .cornerRadius(12)
+                        .padding(.horizontal)
+                    }
+                    .padding(.bottom)
+                    
                     Spacer(minLength: 50)
                 }
             }
         }
-        .background(Color.white)
+        .background(Color.cryptoDarkBlue)
         .edgesIgnoringSafeArea(.all)
         .sheet(isPresented: $viewModel.isShowingRiddleView) {
             RiddleMenuView(viewModel: viewModel, onDismiss: { viewModel.isShowingRiddleView = false })
@@ -274,7 +298,7 @@ struct StatCard: View {
         }
         .frame(maxWidth: .infinity)
         .padding(.vertical, 15)
-        .background(Color.white.opacity(0.9))
+        .background(Color.cryptoLightNavy.opacity(0.9))
         .cornerRadius(15)
         .shadow(color: Color.black.opacity(0.05), radius: 5, x: 0, y: 2)
     }

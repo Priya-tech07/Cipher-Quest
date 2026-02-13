@@ -3,11 +3,12 @@ import SwiftUI
 
 struct ContentView: View {
     @StateObject private var viewModel = GameViewModel()
+    @StateObject private var themeManager = ThemeManager.shared
     @State private var onboardingTargets: [HighlightArea: CGRect] = [:]
     
     var body: some View {
         ZStack {
-            if viewModel.gameState == .menu {
+            if viewModel.gameState == .menu || viewModel.gameState == .categorySelect {
                 HomeView(viewModel: viewModel)
                     .transition(.opacity)
             } else if viewModel.gameState == .calendar {
@@ -77,5 +78,8 @@ struct ContentView: View {
                 }
             }
         )
+        .environmentObject(themeManager)
+        .preferredColorScheme(themeManager.isDarkMode ? .dark : .light)
     }
 }
+

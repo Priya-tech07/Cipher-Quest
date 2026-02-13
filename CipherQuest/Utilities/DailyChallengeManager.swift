@@ -39,49 +39,58 @@ class DailyChallengeManager {
         return completedDates.contains(todaySeed)
     }
     
-    // Streak is now stored and only updated when playing 'Today'
+    // Streak is now calculated dynamically from completed dates history
+    // This is robust against missed updates or local state desync
     var currentStreak: Int {
-        let storedStreak = UserDefaults.standard.integer(forKey: dailyStreakKey)
-        let lastPlayedSeed = UserDefaults.standard.integer(forKey: lastPlayedKey)
-        
-        if lastPlayedSeed == 0 { return 0 }
+        let history = completedDates
+        if history.isEmpty { return 0 }
         
         let calendar = Calendar.current
-        let todaySeed = self.todaySeed
-        let yesterdaySeed = seed(for: calendar.date(byAdding: .day, value: -1, to: Date())!)
+        let today = Date()
+        let todaySeed = self.seed(for: today)
+        let yesterday = calendar.date(byAdding: .day, value: -1, to: today)!
+        let yesterdaySeed = self.seed(for: yesterday)
         
-        // If the last played day was today or yesterday, the streak is still alive
-        if lastPlayedSeed == todaySeed || lastPlayedSeed == yesterdaySeed {
-            return storedStreak
+        // Determine start point:
+        // If today is done, start counting from today backwards.
+        // If today is NOT done but yesterday IS, start counting from yesterday backwards.
+        // If neither is done, streak is broken -> 0.
+        
+        var checkDate = today
+        if !history.contains(todaySeed) {
+            if history.contains(yesterdaySeed) {
+                checkDate = yesterday
+            } else {
+                return 0
+            }
         }
         
-        // Otherwise, the streak has expired
-        return 0
+        var streak = 0
+        while true {
+            let seed = self.seed(for: checkDate)
+            if history.contains(seed) {
+                streak += 1
+                // Move back one day
+                checkDate = calendar.date(byAdding: .day, value: -1, to: checkDate)!
+            } else {
+                break
+            }
+        }
+        
+        return streak
     }
     
     func markChallengeCompleted(for date: Date = Date()) {
         let seed = self.seed(for: date)
         if !completedDates.contains(seed) {
-            // Update history (always do this for any date)
+            // Update history (source of truth)
             var currentHistory = completedDates
             currentHistory.insert(seed)
             UserDefaults.standard.set(Array(currentHistory), forKey: definitionsKey)
             
-            // Streak Logic: ONLY update if the date is Today
-            if Calendar.current.isDateInToday(date) {
-                let calendar = Calendar.current
-                let lastPlayedSeed = UserDefaults.standard.integer(forKey: lastPlayedKey)
-                let yesterdaySeed = self.seed(for: calendar.date(byAdding: .day, value: -1, to: Date())!)
-                
-                var newStreak = 1
-                if lastPlayedSeed == yesterdaySeed {
-                    // Continued from yesterday
-                    newStreak = UserDefaults.standard.integer(forKey: dailyStreakKey) + 1
-                }
-                
-                UserDefaults.standard.set(newStreak, forKey: dailyStreakKey)
-                UserDefaults.standard.set(seed, forKey: lastPlayedKey)
-            }
+            // Legacy Ref: We can still update displayed streak for performance if needed,
+            // but the computed property above is now the authority.
+            // Force a UI update notification if using ObservableObject (not applicable here as singleton)
         }
     }
 }

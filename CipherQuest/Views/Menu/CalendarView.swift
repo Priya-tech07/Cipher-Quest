@@ -11,44 +11,50 @@ struct CalendarView: View {
     
     var body: some View {
         ZStack {
-            Color.white.edgesIgnoringSafeArea(.all)
+            Color.cryptoDarkBlue.edgesIgnoringSafeArea(.all)
             
             VStack(spacing: 20) {
                 // Header
-                HStack {
-                    Button(action: { viewModel.closeCalendar() }) {
-                        Image(systemName: "chevron.left")
-                            .font(.title2)
-                            .foregroundColor(.cryptoText)
-                            .padding()
-                            .background(Color.cryptoNavy)
-                            .clipShape(Circle())
-                    }
-                    
-                    Spacer()
-                    
-                    // Month Navigation
-                    HStack(spacing: 20) {
-                        Button(action: { changeMonth(by: -1) }) {
-                            Image(systemName: "arrow.left.circle")
-                                .font(.title2)
-                                .foregroundColor(.cryptoGreen)
+                ZStack {
+                    // Centered Month/Year Navigation (Dropdowns)
+                    HStack(spacing: 8) {
+                        // Month Dropdown
+                        Menu {
+                            ForEach(1...12, id: \.self) { index in
+                                Button(Calendar.current.monthSymbols[index - 1]) {
+                                    setMonth(index)
+                                }
+                            }
+                        } label: {
+                            Text(currentMonthName())
+                                .font(.system(size: 20, weight: .bold, design: .monospaced))
+                                .foregroundColor(.cryptoText)
                         }
-                        
-                        Text(monthYearString(from: currentMonth))
-                            .font(.system(size: 20, weight: .bold, design: .monospaced))
-                            .foregroundColor(.cryptoText)
-                            .frame(minWidth: 150)
-                            .multilineTextAlignment(.center)
-                        
-                        Button(action: { changeMonth(by: 1) }) {
-                            Image(systemName: "arrow.right.circle")
-                                .font(.title2)
-                                .foregroundColor(.cryptoGreen)
+
+                        // Year Dropdown
+                        Menu {
+                            ForEach(2024...2030, id: \.self) { year in
+                                Button(String(year)) {
+                                    setYear(year)
+                                }
+                            }
+                        } label: {
+                            Text(currentYearString())
+                                .font(.system(size: 20, weight: .bold, design: .monospaced))
+                                .foregroundColor(.cryptoText)
                         }
                     }
                     
-                    Spacer()
+                    // Left-aligned Back Button
+                    HStack {
+                        Button(action: { viewModel.closeCalendar() }) {
+                            Image(systemName: "chevron.left")
+                                .font(.system(size: 20, weight: .bold)) // Slightly larger icon since no text
+                                .foregroundColor(.cryptoBlue)
+                                .padding(10)
+                        }
+                        Spacer()
+                    }
                 }
                 .padding(.horizontal)
                 .padding(.top, 20)
@@ -117,10 +123,37 @@ struct CalendarView: View {
         }
     }
     
-    func monthYearString(from date: Date) -> String {
+    func setMonth(_ monthIndex: Int) {
+        // monthIndex is 1-based (1...12)
+        var components = Calendar.current.dateComponents([.year, .month, .day], from: currentMonth)
+        components.month = monthIndex
+        if let newDate = Calendar.current.date(from: components) {
+            withAnimation {
+                currentMonth = newDate
+            }
+        }
+    }
+    
+    func setYear(_ year: Int) {
+        var components = Calendar.current.dateComponents([.year, .month, .day], from: currentMonth)
+        components.year = year
+        if let newDate = Calendar.current.date(from: components) {
+            withAnimation {
+                currentMonth = newDate
+            }
+        }
+    }
+    
+    func currentMonthName() -> String {
         let formatter = DateFormatter()
-        formatter.dateFormat = "MMMM yyyy"
-        return formatter.string(from: date)
+        formatter.dateFormat = "MMMM"
+        return formatter.string(from: currentMonth)
+    }
+    
+    func currentYearString() -> String {
+        let formatter = DateFormatter()
+        formatter.dateFormat = "yyyy"
+        return formatter.string(from: currentMonth)
     }
     
     func daysInMonth() -> [Date?] {

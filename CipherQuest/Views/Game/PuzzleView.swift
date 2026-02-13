@@ -14,12 +14,13 @@ struct PuzzleView: View {
                 // Header
                 HStack {
                     Button(action: { viewModel.gameState = .menu }) {
-                        Image(systemName: "arrow.left")
-                            .font(.title2)
-                            .foregroundColor(.cryptoText)
-                            .padding(10)
-                            .background(Color.cryptoNavy)
-                            .clipShape(Circle())
+                        HStack(spacing: 5) {
+                            Image(systemName: "chevron.left")
+                            Text("Back")
+                        }
+                        .font(.system(size: 16, weight: .bold, design: .monospaced))
+                        .foregroundColor(.cryptoGreen)
+                        .padding(10)
                     }
                     Spacer()
                     CoinView(amount: viewModel.playerStats.coins)
@@ -72,7 +73,7 @@ struct PuzzleView: View {
                         
                         ZStack {
                             RoundedRectangle(cornerRadius: 20)
-                                .fill(Color.white)
+                                .fill(Color.cryptoNavy)
                                 .shadow(color: Color.black.opacity(0.1), radius: 10, x: 0, y: 5)
                                 .overlay(
                                     RoundedRectangle(cornerRadius: 20)

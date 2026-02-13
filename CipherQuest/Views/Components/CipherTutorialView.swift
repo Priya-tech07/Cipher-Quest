@@ -39,9 +39,13 @@ struct CipherTutorialView: View {
                 Button(action: {
                     withAnimation { isPresented = false }
                 }) {
-                    Image(systemName: "chevron.left")
-                        .font(.title2)
-                        .foregroundColor(.cryptoGreen)
+                    HStack(spacing: 5) {
+                        Image(systemName: "chevron.left")
+                        Text("Back")
+                    }
+                    .font(.system(size: 16, weight: .bold, design: .monospaced))
+                    .foregroundColor(.cryptoGreen)
+                    .padding(10)
                 }
                 
                 Spacer()
@@ -57,7 +61,7 @@ struct CipherTutorialView: View {
             }
             .padding(.horizontal)
             .padding(.bottom, 15)
-            .padding(.top, 50)
+            .padding(.top, 65)
             .background(Color.cryptoNavy)
             
             // Progress Bar
@@ -139,7 +143,7 @@ struct CipherTutorialView: View {
                 }
                 .padding()
                 .padding(.bottom, 30) // Add bottom padding for home indicator
-                .background(Color.white)
+                .background(Color.cryptoDarkBlue)
             }
         }
         .background(Color.cryptoDarkBlue.edgesIgnoringSafeArea(.all))
