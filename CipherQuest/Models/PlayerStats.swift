@@ -14,10 +14,10 @@ struct PlayerStats: Codable {
     var hasSentinelBadge: Bool = false
     var hasSecurityBadge: Bool = false
     var hasGrandMasterBadge: Bool = false
-    var hasSeenOnboarding: Bool = false
+
     
     enum CodingKeys: String, CodingKey {
-        case agentName, coins, levelsCompleted, hintsUsed, currentLevelIndex, experience, completedRiddles, hasDeveloperBadge, hasArchitectBadge, hasSentinelBadge, hasSecurityBadge, hasGrandMasterBadge, hasSeenOnboarding
+        case agentName, coins, levelsCompleted, hintsUsed, currentLevelIndex, experience, completedRiddles, hasDeveloperBadge, hasArchitectBadge, hasSentinelBadge, hasSecurityBadge, hasGrandMasterBadge
     }
     
     init() {}
@@ -36,7 +36,7 @@ struct PlayerStats: Codable {
         hasSentinelBadge = try container.decodeIfPresent(Bool.self, forKey: .hasSentinelBadge) ?? false
         hasSecurityBadge = try container.decodeIfPresent(Bool.self, forKey: .hasSecurityBadge) ?? false
         hasGrandMasterBadge = try container.decodeIfPresent(Bool.self, forKey: .hasGrandMasterBadge) ?? false
-        hasSeenOnboarding = try container.decodeIfPresent(Bool.self, forKey: .hasSeenOnboarding) ?? false
+
     }
     
     func level() -> Int {

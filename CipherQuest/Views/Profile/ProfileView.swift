@@ -116,32 +116,37 @@ struct ProfileView: View {
                     }
                     .padding(.top, -10)
                     
-                    // Stats Grid
-                    LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())], spacing: 15) {
-                        StatCard(title: "COINS", value: "\(viewModel.playerStats.coins)", icon: "centsign.circle.fill", color: .yellow)
-                            .onboardingTarget(.statCoins)
+                    // Settings Section
+                    VStack(alignment: .leading, spacing: 15) {
+                        Text("SYSTEM SETTINGS")
+                            .font(.system(size: 14, weight: .black, design: .monospaced))
+                            .foregroundColor(.cryptoText)
+                            .padding(.horizontal)
                         
-                        StatCard(title: "LEVEL", value: "\(viewModel.playerStats.currentLevelIndex + 1)", icon: "checklist", color: .cryptoGreen)
-                            .onboardingTarget(.statMissions)
-                        
-                        StatCard(title: "XP", value: "\(viewModel.playerStats.experience)", icon: "bolt.fill", color: .orange)
-                            .onboardingTarget(.statXP)
-                        
-                        Button(action: { viewModel.isShowingRiddleView = true }) {
-                            StatCard(title: "RIDDLES", value: "\(viewModel.playerStats.completedRiddles.count)", icon: "brain.head.profile", color: .cryptoPurple)
+                        Toggle(isOn: $themeManager.isDarkMode) {
+                            HStack {
+                                Image(systemName: themeManager.isDarkMode ? "sun.max.fill" : "moon.fill")
+                                    .foregroundColor(themeManager.isDarkMode ? .yellow : .cryptoPurple)
+                                Text(themeManager.isDarkMode ? "LIGHT MODE" : "DARK MODE")
+                                    .font(.system(size: 16, weight: .bold, design: .monospaced))
+                                    .foregroundColor(.cryptoText)
+                            }
                         }
-                        .onboardingTarget(.profileRiddles) // Track Riddles Button
+                        .padding()
+                        .background(Color.cryptoSurface.opacity(0.3))
+                        .cornerRadius(12)
+                        .padding(.horizontal)
                     }
-                    .padding(.horizontal)
+                    .padding(.bottom, 10)
                     
                     // Progress Section
                     VStack(alignment: .leading, spacing: 10) {
                         let currentXP = viewModel.playerStats.experience
                         let riddleMilestones = [500, 1000, 2000, 3000]
                         let nextMilestone = riddleMilestones.first(where: { $0 > currentXP }) ?? 3000
-                        let prevMilestone = riddleMilestones.last(where: { $0 <= currentXP }) ?? 0
                         
-                        let progress = nextMilestone > prevMilestone ? Double(currentXP - prevMilestone) / Double(nextMilestone - prevMilestone) : 1.0
+                        // Fix for user confusion: Calculate progress as a percentage of the total milestone, not just the current level
+                        let progress = Double(currentXP) / Double(nextMilestone)
                         let isAllMaxed = currentXP >= 3000
                         
                         let nextUnlockName: String = {
@@ -154,24 +159,82 @@ struct ProfileView: View {
                             }
                         }()
 
-                        HStack {
-                            Text(isAllMaxed ? "FULL SYSTEM CLEARANCE" : "NEXT RIDDLE TO UNLOCK: \(nextUnlockName)")
-                                .font(.system(size: 11, weight: .bold, design: .monospaced))
-                                .foregroundColor(.cryptoSubtext)
+                        // Progress Section (Circular Redesign)
+                        HStack(alignment: .center, spacing: 20) {
+                            // Left: Text Info
+                            VStack(alignment: .leading, spacing: 8) {
+                                Text(isAllMaxed ? "FULL SYSTEM CLEARANCE" : "NEXT CLEARANCE:")
+                                    .font(.system(size: 10, weight: .bold, design: .monospaced))
+                                    .foregroundColor(.cryptoSubtext)
+                                
+                                Text(nextUnlockName)
+                                    .font(.system(size: 16, weight: .black, design: .monospaced))
+                                    .foregroundColor(.cryptoText)
+                                    .lineLimit(1)
+                                    .minimumScaleFactor(0.8)
+                                
+                                Text(isAllMaxed ? "MAXED" : "\(currentXP) / \(nextMilestone) XP")
+                                    .font(.system(size: 12, design: .monospaced))
+                                    .foregroundColor(.cryptoPurple)
+                            }
+                            
                             Spacer()
-                            Text(isAllMaxed ? "MAXED" : "\(currentXP)/\(nextMilestone) XP")
-                                .font(.system(size: 11, design: .monospaced))
-                                .foregroundColor(.cryptoPurple)
+                            
+                            // Right: Circular Progress
+                            ZStack {
+                                // Background Track
+                                Circle()
+                                    .stroke(Color.cryptoLightNavy, lineWidth: 8)
+                                    .frame(width: 60, height: 60)
+                                
+                                // Progress
+                                Circle()
+                                    .trim(from: 0.0, to: CGFloat(isAllMaxed ? 1.0 : progress))
+                                    .stroke(
+                                        Color.cryptoGreen, // Matches the 'Back' button blue
+                                        style: StrokeStyle(lineWidth: 8, lineCap: .round)
+                                    )
+                                    .rotationEffect(Angle(degrees: -90))
+                                    .frame(width: 60, height: 60)
+                                    .animation(.easeInOut(duration: 0.8), value: progress)
+                                
+                                // Center Icon/Text
+                                if isAllMaxed {
+                                    Image(systemName: "checkmark.circle.fill")
+                                        .foregroundColor(.cryptoGreen)
+                                        .font(.system(size: 20))
+                                } else {
+                                    Text("\(Int(progress * 100))%")
+                                        .font(.system(size: 12, weight: .bold, design: .monospaced))
+                                        .foregroundColor(.white)
+                                }
+                            }
                         }
-                        
-                        ProgressView(value: isAllMaxed ? 1.0 : progress, total: 1.0)
-                            .accentColor(.cryptoPurple)
-                            .scaleEffect(x: 1, y: 1.5, anchor: .center)
                     }
                     .padding()
                     .background(Color.cryptoSurface.opacity(0.5))
                     .cornerRadius(15)
                     .padding(.horizontal)
+                    .padding(.bottom, 15)
+                    
+                    // Stats Grid
+                    LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())], spacing: 15) {
+                        StatCard(title: "COINS", value: "\(viewModel.playerStats.coins)", icon: "centsign.circle.fill", color: .yellow)
+
+                        
+                        StatCard(title: "LEVEL", value: "\(viewModel.playerStats.currentLevelIndex + 1)", icon: "checklist", color: .cryptoGreen)
+
+                        
+                        StatCard(title: "XP", value: "\(viewModel.playerStats.experience)", icon: "bolt.fill", color: .orange)
+
+                        
+                        Button(action: { viewModel.isShowingRiddleView = true }) {
+                            StatCard(title: "RIDDLES", value: "\(viewModel.playerStats.completedRiddles.count)", icon: "brain.head.profile", color: .cryptoPurple)
+                        }
+
+                    }
+                    .padding(.horizontal)
+                    
                     
                     // Achievements Placeholder
                     VStack(alignment: .leading, spacing: 15) {
@@ -234,28 +297,7 @@ struct ProfileView: View {
                     }
                     .padding(.vertical)
                     
-                    // Settings Section
-                    VStack(alignment: .leading, spacing: 15) {
-                        Text("SYSTEM SETTINGS")
-                            .font(.system(size: 14, weight: .black, design: .monospaced))
-                            .foregroundColor(.cryptoText)
-                            .padding(.horizontal)
-                        
-                        Toggle(isOn: $themeManager.isDarkMode) {
-                            HStack {
-                                Image(systemName: "moon.fill")
-                                    .foregroundColor(.cryptoPurple)
-                                Text("DARK MODE")
-                                    .font(.system(size: 16, weight: .bold, design: .monospaced))
-                                    .foregroundColor(.cryptoText)
-                            }
-                        }
-                        .padding()
-                        .background(Color.cryptoSurface.opacity(0.3))
-                        .cornerRadius(12)
-                        .padding(.horizontal)
-                    }
-                    .padding(.bottom)
+
                     
                     Spacer(minLength: 50)
                 }
@@ -277,6 +319,7 @@ struct ProfileView: View {
 }
 
 struct StatCard: View {
+    @EnvironmentObject var themeManager: ThemeManager // Force redraw on theme change
     let title: String
     let value: String
     let icon: String
@@ -305,6 +348,7 @@ struct StatCard: View {
 }
 
 struct BadgeIcon: View {
+    @EnvironmentObject var themeManager: ThemeManager // Force redraw on theme change
     let icon: String
     let color: Color
     let label: String

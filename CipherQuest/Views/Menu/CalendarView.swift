@@ -50,7 +50,7 @@ struct CalendarView: View {
                         Button(action: { viewModel.closeCalendar() }) {
                             Image(systemName: "chevron.left")
                                 .font(.system(size: 20, weight: .bold)) // Slightly larger icon since no text
-                                .foregroundColor(.cryptoBlue)
+                                .foregroundColor(Color(hex: "007AFF"))
                                 .padding(10)
                         }
                         Spacer()

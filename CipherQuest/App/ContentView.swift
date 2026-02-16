@@ -4,7 +4,7 @@ import SwiftUI
 struct ContentView: View {
     @StateObject private var viewModel = GameViewModel()
     @StateObject private var themeManager = ThemeManager.shared
-    @State private var onboardingTargets: [HighlightArea: CGRect] = [:]
+
     
     var body: some View {
         ZStack {
@@ -66,18 +66,8 @@ struct ContentView: View {
             }
             .edgesIgnoringSafeArea(.all)
         )
-        .onPreferenceChange(OnboardingPreferenceKey.self) { preferences in
-            self.onboardingTargets = preferences
-        }
-        .overlay(
-            Group {
-                if viewModel.isShowingOnboarding {
-                    OnboardingOverlay(viewModel: viewModel, targetFrames: onboardingTargets)
-                        .transition(.opacity)
-                        .zIndex(100)
-                }
-            }
-        )
+
+
         .environmentObject(themeManager)
         .preferredColorScheme(themeManager.isDarkMode ? .dark : .light)
     }

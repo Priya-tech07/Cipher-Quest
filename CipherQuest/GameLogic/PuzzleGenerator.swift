@@ -30,6 +30,8 @@ class PuzzleGenerator {
         case .coding: data = PuzzleGenerator.codingData
         case .cricket: data = PuzzleGenerator.cricketData
         case .cinema: data = PuzzleGenerator.cinemaData
+        case .geography: data = PuzzleGenerator.geographyData
+        case .history: data = PuzzleGenerator.historyData
         }
         
         var generator: RandomNumberGenerator
@@ -171,6 +173,52 @@ class PuzzleGenerator {
         ("NOIR", "A style of film marked by a mood of pessimism."),
         ("INDIE", "Independent film."),
         ("BLOCK", "Short for Blockbuster.")
+    ]
+    
+    private static let geographyData: [(String, String)] = [
+        ("ATLAS", "A book of maps."),
+        ("EQUATOR", "Imaginary line dividing the earth."),
+        ("DESERT", "A dry, barren area of land."),
+        ("OCEAN", "A very large expanse of sea."),
+        ("CANYON", "A deep gorge."),
+        ("DELTA", "A triangular tract of sediment."),
+        ("GLACIER", "A slowly moving mass of ice."),
+        ("JUNGLE", "Land with dense forest."),
+        ("TUNDRA", "A vast, flat, treeless Arctic region."),
+        ("VOLCANO", "A mountain with a crater."),
+        ("SUMMIT", "The highest point of a hill."),
+        ("RIVER", "A large natural stream of water."),
+        ("ISLAND", "Land surrounded by water."),
+        ("CAPITAL", "The most important city or town."),
+        ("BORDER", "A line separating two countries."),
+        ("LATITUDE", "Distance north or south of the equator."),
+        ("CLIMATE", "Weather conditions prevailing in an area."),
+        ("PLATEAU", "An area of relatively high ground."),
+        ("VALLEY", "A low area of land between hills."),
+        ("REEF", "A ridge of jagged rock.")
+    ]
+    
+    private static let historyData: [(String, String)] = [
+        ("EMPIRE", "An extensive group of states."),
+        ("KINGDOM", "A country, state, or territory ruled by a king or queen."),
+        ("PHARAOH", "A ruler in ancient Egypt."),
+        ("KNIGHT", "A man who served his sovereign or lord."),
+        ("CASTLE", "A large building fortified against attack."),
+        ("Viking", "Scandinavian seafaring pirates."),
+        ("SPARTAN", "A citizen of Sparta."),
+        ("SAMURAI", "A member of a powerful military caste in feudal Japan."),
+        ("DYNASTY", "A line of hereditary rulers."),
+        ("TREATY", "A formally concluded and ratified agreement."),
+        ("COLONY", "A country or area under the full or partial control of another country."),
+        ("REVOLT", "Rise in rebellion."),
+        ("RELIC", "An object surviving from an earlier time."),
+        ("MYTH", "A traditional story."),
+        ("LEGEND", "A traditional story sometimes regarded as historical."),
+        ("ANCIENT", "Belonging to the very distant past."),
+        ("TEMPLE", "A building devoted to the worship of a god."),
+        ("TOMB", "A large vault for burying the dead."),
+        ("SCROLL", "A roll of parchment."),
+        ("RUINS", "The physical destruction or disintegration of something.")
     ]
 }
 

@@ -9,7 +9,7 @@ class GameViewModel: ObservableObject {
     @Published var isShowingReference = false
     @Published var isShowingProfile = false
     @Published var isShowingRiddleView = false
-    @Published var isShowingOnboarding = false
+
     @Published var userInput: String = ""
     @Published var feedbackMessage: String?
     @Published var hintState: HintState = .none
@@ -65,17 +65,10 @@ class GameViewModel: ObservableObject {
     
     init() {
         self.playerStats = UserDefaultsManager.shared.loadStats()
-        // Determine if onboarding should be shown (first time users or explicit reset)
-        if !playerStats.hasSeenOnboarding {
-            self.isShowingOnboarding = true
-        }
+
     }
     
-    func completeOnboarding() {
-        playerStats.hasSeenOnboarding = true
-        isShowingOnboarding = false
-        UserDefaultsManager.shared.saveStats(playerStats)
-    }
+
     
     func showCalendar() {
         withAnimation {

@@ -40,19 +40,31 @@ struct RiddleMenuView: View {
                 
                 VStack(spacing: 20) {
                     // Header
-                    HStack {
-                        Button(action: onDismiss) {
-                            Image(systemName: "xmark.circle.fill")
-                                .font(.title)
-                                .foregroundColor(.white.opacity(0.6))
-                        }
-                        Spacer()
+
+                    ZStack {
+                        // Centered Title
                         Text("SECURE ARCHIVES")
                             .font(.system(size: 18, weight: .black, design: .monospaced))
                             .foregroundColor(.cryptoGreen)
-                        Spacer()
-                        CoinView(amount: viewModel.playerStats.coins)
-                            .scaleEffect(0.8)
+                            .frame(maxWidth: .infinity, alignment: .center)
+                        
+                        // Left & Right Items
+                        HStack {
+                            Button(action: onDismiss) {
+                                HStack(spacing: 5) {
+                                    Image(systemName: "chevron.left")
+                                        .font(.title2)
+                                    Text("Back")
+                                        .font(.system(size: 16, weight: .bold, design: .monospaced))
+                                }
+                                .foregroundColor(.cryptoGreen)
+                            }
+                            
+                            Spacer()
+                            
+                            CoinView(amount: viewModel.playerStats.coins)
+                                .scaleEffect(0.8)
+                        }
                     }
                     .padding()
                     

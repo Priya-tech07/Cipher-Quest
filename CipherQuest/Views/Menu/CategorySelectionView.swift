@@ -12,9 +12,29 @@ struct CategorySelectionView: View {
             VStack(spacing: 30) {
                 // Header
                 VStack(spacing: 10) {
-                    Text("SELECT CATEGORY")
-                        .font(.system(size: 24, weight: .black, design: .monospaced))
-                        .foregroundColor(.cryptoText)
+                    ZStack {
+                        // Back Button (Aligned to Leading)
+                        HStack {
+                            Button(action: {
+                                withAnimation {
+                                    viewModel.gameState = .menu
+                                }
+                            }) {
+                            Image(systemName: "chevron.left")
+                                .font(.system(size: 24, weight: .bold)) // Adjusted size for icon-only
+                                .foregroundColor(Color(hex: "007AFF")) // System Blue
+                                .padding(10) // Ensure touch target
+                                .background(Color.black.opacity(0.001))
+                            }
+                            Spacer()
+                        }
+                        .padding(.leading, 10)
+                        
+                        // Centered Title
+                        Text("SELECT CATEGORY")
+                            .font(.system(size: 24, weight: .black, design: .monospaced))
+                            .foregroundColor(.cryptoText)
+                    }
                     
                     Text("Choose your mission field")
                         .font(.system(size: 14, design: .monospaced))
@@ -65,17 +85,6 @@ struct CategorySelectionView: View {
                 }
                 
                 Spacer()
-                
-                Button(action: {
-                    withAnimation {
-                        viewModel.gameState = .menu
-                    }
-                }) {
-                    Text("CANCEL MISSION")
-                        .font(.system(size: 14, weight: .bold, design: .monospaced))
-                        .foregroundColor(.cryptoSubtext)
-                        .padding()
-                }
             }
         }
     }

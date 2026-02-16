@@ -47,7 +47,7 @@ struct HomeView: View {
                         .cornerRadius(20)
                         .shadow(color: Color.black.opacity(0.05), radius: 5, x: 0, y: 2)
                     }
-                    .onboardingTarget(.topRight) // Track Profile Button
+
                     .padding(.top, 10)
                     .padding(.trailing, 20)
                 }
@@ -83,17 +83,17 @@ struct HomeView: View {
                     MenuButton(title: "EASY MISSION", icon: "arrow.right.circle.fill", color: .cryptoBlue, textColor: .white) {
                          withAnimation { viewModel.showCategorySelection(mode: .story) }
                     }
-                    .onboardingTarget(.missionEasy)
+
                     
                     MenuButton(title: "HARD MISSION", icon: "shield.righthalf.filled", color: .cryptoGreen, textColor: .white) {
                          withAnimation { viewModel.showCategorySelection(mode: .practice, preferredType: .caesar) }
                     }
-                    .onboardingTarget(.missionHard)
+
                     
-                    MenuButton(title: "DIFFICULT MISSION", icon: "exclamationmark.triangle.fill", color: .cryptoPurple, textColor: .white) { // Changed to Purple for visibility
+                    MenuButton(title: "DIFFICULT MISSION", icon: "exclamationmark.triangle.fill", color: Color(hex: "102A43"), textColor: .white) { // Changed to Navy Blue
                          withAnimation { viewModel.showCategorySelection(mode: .practice, preferredType: .vigenere) }
                     }
-                    .onboardingTarget(.missionDifficult)
+
                 }
                 .padding(.horizontal, 40)
                 
@@ -156,7 +156,7 @@ struct HomeView: View {
                         .background(Color.cryptoPurple.opacity(0.1))
                         .cornerRadius(20)
                     }
-                    .onboardingTarget(.bottom) // Track How to Solve
+
                     
                     Text("SECURE CONNECTION ESTABLISHED")
                         .font(.system(size: 10, design: .monospaced))
@@ -176,19 +176,13 @@ struct HomeView: View {
                     .zIndex(2)
             }
             
+            
             if viewModel.gameState == .calendar {
                 CalendarView(viewModel: viewModel)
                     .transition(.move(edge: .bottom))
                     .zIndex(2)
             }
-            
-            if viewModel.isShowingProfile {
-                ProfileView(viewModel: viewModel, onDismiss: {
-                    withAnimation { viewModel.isShowingProfile = false }
-                })
-                .transition(.move(edge: .trailing))
-                .zIndex(3)
-            }
+
             
             if viewModel.isShowingHowToSolve {
                 HowToSolveView(cipherType: nil, onDismiss: {
@@ -198,11 +192,7 @@ struct HomeView: View {
                     .zIndex(4)
             }
             
-            if viewModel.isShowingOnboarding {
-               OnboardingView(viewModel: viewModel)
-                   .transition(.opacity)
-                   .zIndex(5)
-            }
+
         }
     }
 }
