@@ -91,7 +91,7 @@ struct HomeView: View {
                     }
 
                     
-                    MenuButton(title: "DIFFICULT MISSION", icon: "exclamationmark.triangle.fill", color: Color(hex: "102A43"), textColor: .white) { // Changed to Navy Blue
+                    MenuButton(title: "DIFFICULT MISSION", icon: "exclamationmark.triangle.fill", color: Color(hex: "2B4E72"), textColor: .white) { // Changed to Navy Blue
                          withAnimation { viewModel.showCategorySelection(mode: .practice, preferredType: .vigenere) }
                     }
 
