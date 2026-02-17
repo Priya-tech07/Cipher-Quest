@@ -21,7 +21,7 @@ struct ContentView: View {
                     .transition(.opacity)
             }
         }
-        .animation(.easeInOut, value: viewModel.gameState)
+        .animation(.easeInOut(duration: 0.6), value: viewModel.gameState)
         .overlay(
             ZStack(alignment: .bottom) {
                 if viewModel.isShowingHowToSolve || viewModel.isShowingReference || viewModel.isShowingProfile {

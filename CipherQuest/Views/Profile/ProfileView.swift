@@ -95,9 +95,10 @@ struct ProfileView: View {
                                     .padding(.trailing, 12)
                                 
                                 Text(viewModel.playerStats.agentName)
-                                    .font(.system(size: 24, weight: .black, design: .monospaced))
-                                    .foregroundColor(.cryptoText)
+                                    .font(.system(size: 28, weight: .black, design: .monospaced))
+                                    .foregroundColor(.cryptoGreen)
                                     .multilineTextAlignment(.center)
+                                    .shadow(color: .cryptoGreen.opacity(0.3), radius: 5)
                                 
                                 Button(action: {
                                     editingName = viewModel.playerStats.agentName
@@ -111,7 +112,7 @@ struct ProfileView: View {
                             }
                         }
                         
-                        Text("ACTIVE AGENT")
+                        Text("CODENAME")
                             .font(.system(size: 10, weight: .bold, design: .monospaced))
                             .foregroundColor(.cryptoSubtext)
                     }
