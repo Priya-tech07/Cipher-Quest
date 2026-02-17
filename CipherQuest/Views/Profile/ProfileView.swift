@@ -50,7 +50,8 @@ struct ProfileView: View {
             .background(Color.cryptoDarkBlue.edgesIgnoringSafeArea(.top))
             
             ScrollView {
-                VStack(spacing: 25) {
+                ScrollViewReader { proxy in
+                    VStack(spacing: 25) {
                     // Avatar Section
                     Image(systemName: "person.crop.circle.fill")
                         .font(.system(size: 100))
@@ -135,9 +136,15 @@ struct ProfileView: View {
                         .padding()
                         .background(Color.cryptoSurface.opacity(0.3))
                         .cornerRadius(12)
+                        .overlay(
+                            RoundedRectangle(cornerRadius: 12)
+                                .stroke(Color.cryptoSubtext.opacity(0.1), lineWidth: 1)
+                        )
+                        .walkthroughHighlight(id: "profile_settings", enabled: viewModel.isOnboarding)
                         .padding(.horizontal)
                     }
                     .padding(.bottom, 10)
+                    .id("settings_section")
                     
                     // Progress Section
                     VStack(alignment: .leading, spacing: 10) {
@@ -173,7 +180,11 @@ struct ProfileView: View {
                                     .lineLimit(1)
                                     .minimumScaleFactor(0.8)
                                 
-                                Text(isAllMaxed ? "MAXED" : "\(currentXP) / \(nextMilestone) XP")
+                                Text(isAllMaxed ? "MAXED" : "\(nextMilestone - currentXP) XP TO UNLOCK")
+                                    .font(.system(size: 10, weight: .bold, design: .monospaced))
+                                    .foregroundColor(.cryptoGreen)
+                                
+                                Text(isAllMaxed ? "" : "\(currentXP) / \(nextMilestone) XP")
                                     .font(.system(size: 12, design: .monospaced))
                                     .foregroundColor(.cryptoPurple)
                             }
@@ -214,23 +225,34 @@ struct ProfileView: View {
                     .padding()
                     .background(Color.cryptoSurface.opacity(0.5))
                     .cornerRadius(15)
+
+                    .walkthroughHighlight(id: "profile_xp", enabled: viewModel.isOnboarding)
                     .padding(.horizontal)
                     .padding(.bottom, 15)
+                    .id("xp_section")
                     
                     // Stats Grid
                     LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())], spacing: 15) {
                         StatCard(title: "COINS", value: "\(viewModel.playerStats.coins)", icon: "centsign.circle.fill", color: .yellow)
+                            .walkthroughHighlight(id: "profile_coins", enabled: viewModel.isOnboarding)
+                            .id("coins_section")
 
                         
                         StatCard(title: "LEVEL", value: "\(viewModel.playerStats.currentLevelIndex + 1)", icon: "checklist", color: .cryptoGreen)
+                            .walkthroughHighlight(id: "profile_level", enabled: viewModel.isOnboarding)
+                            .id("level_section")
 
                         
                         StatCard(title: "XP", value: "\(viewModel.playerStats.experience)", icon: "bolt.fill", color: .orange)
+                            .walkthroughHighlight(id: "profile_xp_stat", enabled: viewModel.isOnboarding)
+                            .id("xp_stat_section")
 
                         
                         Button(action: { viewModel.isShowingRiddleView = true }) {
                             StatCard(title: "RIDDLES", value: "\(viewModel.playerStats.completedRiddles.count)", icon: "brain.head.profile", color: .cryptoPurple)
                         }
+                        .walkthroughHighlight(id: "profile_riddles", enabled: viewModel.isOnboarding)
+                        .id("riddles_section")
 
                     }
                     .padding(.horizontal)
@@ -242,6 +264,7 @@ struct ProfileView: View {
                             .font(.system(size: 14, weight: .black, design: .monospaced))
                             .foregroundColor(.cryptoText)
                             .padding(.horizontal)
+                            .padding(.top, 15) // Added top padding inside the new container
                         
                         // Static Badge Collection
                         VStack {
@@ -294,14 +317,73 @@ struct ProfileView: View {
                                     .padding(.top, 5)
                             }
                         }
+
+    
                     }
                     .padding(.vertical)
+                    .background(Color.cryptoSurface.opacity(0.3)) // Added background for consistency with other cards
+                    .cornerRadius(12)                             // Added corner radius for consistency
+                    .overlay(
+                        RoundedRectangle(cornerRadius: 12)
+                            .stroke(Color.cryptoSubtext.opacity(0.1), lineWidth: 1) // Added border
+                    )
+                    .walkthroughHighlight(id: "profile_badges", enabled: viewModel.isOnboarding)
+                    .padding(.horizontal)                         // Ensure padding is outside highlight
+                    .id("badges_section")
                     
 
                     
                     Spacer(minLength: 50)
                 }
-            }
+                .onChange(of: viewModel.currentOnboardingStep) { _, newStep in
+                    withAnimation {
+                        switch newStep {
+                        case .profileCoins:
+                            proxy.scrollTo("coins_section", anchor: .center)
+                        case .profileLevel:
+                            proxy.scrollTo("level_section", anchor: .center)
+                        case .profileXPStat:
+                            proxy.scrollTo("xp_stat_section", anchor: .center)
+                        case .profileRiddles:
+                            proxy.scrollTo("riddles_section", anchor: .center)
+                        case .profileBadges:
+                            proxy.scrollTo("badges_section", anchor: .bottom)
+                        case .profileSettings:
+                            proxy.scrollTo("settings_section", anchor: .top)
+                        case .profileXP:
+                            proxy.scrollTo("xp_section", anchor: .center)
+                        default:
+                            break
+                        }
+                    }
+                }
+                .onAppear {
+                    // Initial scroll if starting deep in the flow
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+                        withAnimation {
+                            switch viewModel.currentOnboardingStep {
+                            case .profileCoins:
+                                proxy.scrollTo("coins_section", anchor: .center)
+                            case .profileLevel:
+                                proxy.scrollTo("level_section", anchor: .center)
+                            case .profileXPStat:
+                                proxy.scrollTo("xp_stat_section", anchor: .center)
+                            case .profileRiddles:
+                                proxy.scrollTo("riddles_section", anchor: .center)
+                            case .profileBadges:
+                                proxy.scrollTo("badges_section", anchor: .bottom)
+                            case .profileSettings:
+                                proxy.scrollTo("settings_section", anchor: .top)
+                            case .profileXP:
+                                proxy.scrollTo("xp_section", anchor: .center)
+                            default:
+                                break
+                            }
+                        }
+                    }
+                }
+                } // End of ScrollViewReader
+            } // End of ScrollView
         }
         .background(Color.cryptoDarkBlue)
         .edgesIgnoringSafeArea(.all)
@@ -309,6 +391,9 @@ struct ProfileView: View {
             RiddleMenuView(viewModel: viewModel, onDismiss: { viewModel.isShowingRiddleView = false })
         }
     }
+    
+
+    
     
     private func saveName() {
         if !editingName.isEmpty {

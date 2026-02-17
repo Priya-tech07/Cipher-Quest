@@ -6,6 +6,8 @@ struct ContentView: View {
     @StateObject private var themeManager = ThemeManager.shared
 
     
+    @State private var walkthroughSteps: [String: CGRect] = [:]
+    
     var body: some View {
         ZStack {
             if viewModel.gameState == .menu || viewModel.gameState == .categorySelect {
@@ -63,11 +65,25 @@ struct ContentView: View {
                     .transition(.move(edge: .bottom))
                     .zIndex(3)
                 }
+                
+                // Onboarding Overlays
+                if viewModel.isOnboarding {
+                    if viewModel.currentOnboardingStep == .nameInput {
+                        NameInputView(viewModel: viewModel)
+                            .zIndex(100)
+                            .transition(.opacity)
+                    } else if viewModel.currentOnboardingStep != .completed {
+                        WalkthroughOverlay(viewModel: viewModel, steps: walkthroughSteps)
+                            .zIndex(99)
+                            .transition(.opacity)
+                    }
+                }
             }
             .edgesIgnoringSafeArea(.all)
         )
-
-
+        .onPreferenceChange(WalkthroughHighlightKey.self) { preferences in
+            self.walkthroughSteps = preferences
+        }
         .environmentObject(themeManager)
         .preferredColorScheme(themeManager.isDarkMode ? .dark : .light)
     }

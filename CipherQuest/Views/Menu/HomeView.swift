@@ -47,6 +47,7 @@ struct HomeView: View {
                         .cornerRadius(20)
                         .shadow(color: Color.black.opacity(0.05), radius: 5, x: 0, y: 2)
                     }
+                    .walkthroughHighlight(id: "profile_button", enabled: viewModel.isOnboarding)
 
                     .padding(.top, 10)
                     .padding(.trailing, 20)
@@ -95,6 +96,7 @@ struct HomeView: View {
                     }
 
                 }
+                .walkthroughHighlight(id: "difficulty_section", enabled: viewModel.isOnboarding)
                 .padding(.horizontal, 40)
                 
                 Spacer()
@@ -136,6 +138,7 @@ struct HomeView: View {
                     .cornerRadius(15)
                     .shadow(color: Color.black.opacity(0.3), radius: 8, x: 0, y: 4)
                 }
+                .walkthroughHighlight(id: "daily_challenge_button", enabled: viewModel.isOnboarding)
                 .padding(.horizontal, 40)
                 .disabled(false) // DailyChallengeManager.shared.isChallengeCompletedToday
                 
@@ -156,6 +159,7 @@ struct HomeView: View {
                         .background(Color.cryptoPurple.opacity(0.1))
                         .cornerRadius(20)
                     }
+                    .walkthroughHighlight(id: "how_to_solve_button", enabled: viewModel.isOnboarding)
 
                     
                     Text("SECURE CONNECTION ESTABLISHED")

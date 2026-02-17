@@ -55,6 +55,7 @@ struct PuzzleView: View {
                             .foregroundColor(.cryptoSubtext.opacity(0.8))
                             .multilineTextAlignment(.center)
                             .padding(.horizontal)
+                            .walkthroughHighlight(id: "game_cipher_info", enabled: viewModel.isOnboarding)
                         
                         // Visible Key
                         if level.cipherType != .atbash {
@@ -177,6 +178,7 @@ struct PuzzleView: View {
                 
                 HStack(spacing: 12) {
                     HintButton(action: { viewModel.useHint() }, cost: viewModel.hintState.cost)
+                        .walkthroughHighlight(id: "game_hint_button", enabled: viewModel.isOnboarding)
                     
                     Button(action: {
                         withAnimation { viewModel.isShowingReference = true }
@@ -193,6 +195,7 @@ struct PuzzleView: View {
                         .cornerRadius(12)
                         .shadow(color: .cryptoBlue.opacity(0.3), radius: 5)
                     }
+                    .walkthroughHighlight(id: "game_index_button", enabled: viewModel.isOnboarding)
 
                     Button(action: {
                         withAnimation { viewModel.isShowingHowToSolve = true }
@@ -209,6 +212,7 @@ struct PuzzleView: View {
                         .cornerRadius(12)
                         .shadow(color: .cryptoPurple.opacity(0.3), radius: 5)
                     }
+                    .walkthroughHighlight(id: "game_help_button", enabled: viewModel.isOnboarding)
                     
                     Spacer()
                 }

@@ -9,6 +9,10 @@ class GameViewModel: ObservableObject {
     @Published var isShowingReference = false
     @Published var isShowingProfile = false
     @Published var isShowingRiddleView = false
+    
+    // Onboarding State
+    @Published var isOnboarding = false
+    @Published var currentOnboardingStep: OnboardingStep = .menuIntro
 
     @Published var userInput: String = ""
     @Published var feedbackMessage: String?
@@ -65,7 +69,12 @@ class GameViewModel: ObservableObject {
     
     init() {
         self.playerStats = UserDefaultsManager.shared.loadStats()
-
+        
+        // Check if first launch
+        if !UserDefaults.standard.bool(forKey: "hasCompletedOnboarding") {
+            self.isOnboarding = true
+            self.currentOnboardingStep = .menuIntro
+        }
     }
     
 
@@ -266,5 +275,69 @@ class GameViewModel: ObservableObject {
     func updateAgentName(_ newName: String) {
         playerStats.agentName = newName.trimmingCharacters(in: .whitespacesAndNewlines).uppercased()
         UserDefaultsManager.shared.saveStats(playerStats)
+    }
+    
+    // MARK: - Onboarding Logic
+    
+    func nextOnboardingStep() {
+        guard let currentIndex = OnboardingStep.allCases.firstIndex(of: currentOnboardingStep) else { return }
+        let nextIndex = currentIndex + 1
+        
+        if nextIndex < OnboardingStep.allCases.count {
+            let nextStep = OnboardingStep.allCases[nextIndex]
+            
+            // If next step is completed, finish up
+            if nextStep == .completed {
+                completeOnboarding()
+            } else {
+                withAnimation {
+                    currentOnboardingStep = nextStep
+                    // Handle side effects (e.g., navigation)
+                    handleOnboardingSideEffects(step: nextStep)
+                }
+            }
+        } else {
+            completeOnboarding()
+        }
+    }
+    
+    private func handleOnboardingSideEffects(step: OnboardingStep) {
+        switch step {
+        case .profileCoins:
+            isShowingProfile = true
+        case .gameIntro:
+            isShowingProfile = false
+             // Start a practice game using Atbash for the tutorial
+             // We need to ensure we are in a clean state
+             if gameState != .playing {
+                 // Force start a game with Atbash
+                 // We'll use a specific tutorial level or just a random one. 
+                 // For now, let's use Practice Mode with Atbash
+                 startGame(mode: .practice, preferredType: .atbash)
+             }
+        default:
+            break
+        }
+    }
+    
+    func skipOnboarding() {
+        completeOnboarding()
+    }
+    
+    private func completeOnboarding() {
+        withAnimation {
+            isOnboarding = false
+            currentOnboardingStep = .completed
+            isShowingProfile = false
+        }
+        
+        // Delay the transition to menu for a smoother effect
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+            withAnimation {
+                self.gameState = .menu
+            }
+        }
+        
+        UserDefaults.standard.set(true, forKey: "hasCompletedOnboarding")
     }
 }
