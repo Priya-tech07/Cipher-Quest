@@ -13,6 +13,7 @@ struct RiddleGridView: View {
     @ObservedObject var viewModel: GameViewModel
     var level: Int // Added level parameter
     var onDismiss: () -> Void
+    @EnvironmentObject var themeManager: ThemeManager
     
     @State private var selectedRiddle: Riddle?
     @State private var riddleInput: String = ""
@@ -194,11 +195,20 @@ struct RiddleGridView: View {
         }
     }
     
+    // Check if level is complete
+    private var isLevelComplete: Bool {
+        let levelRiddleIds = riddles.map { $0.id }
+        return levelRiddleIds.allSatisfy { viewModel.playerStats.completedRiddles.contains($0) }
+    }
+    
     private func handleRiddleTap(_ riddle: Riddle) {
         if viewModel.playerStats.experience >= riddle.xpRequired {
             if !viewModel.playerStats.completedRiddles.contains(riddle.id) {
                 withAnimation { selectedRiddle = riddle }
                 riddleInput = ""
+            } else if isLevelComplete {
+                // Allow replaying the celebration animation if level is complete
+                withAnimation { showBadgeAward = true }
             }
         }
     }
@@ -257,7 +267,7 @@ struct RiddleGridView: View {
     
     private func mysteryBoxOverlay(for riddle: Riddle) -> some View {
         ZStack {
-            Color.white.edgesIgnoringSafeArea(.all)
+            Color.cryptoDarkBlue.edgesIgnoringSafeArea(.all)
                 .onTapGesture { selectedRiddle = nil }
             
             if showFeedback && feedbackMsg.contains("GRANTED") {
@@ -352,7 +362,7 @@ struct RiddleGridView: View {
                     .foregroundColor(.gray)
                 }
                 .padding(30)
-                .background(Color.white)
+                .background(Color.cryptoLightNavy)
                 .cornerRadius(25)
                 .padding(40)
                 .shadow(radius: 20)
@@ -373,7 +383,7 @@ struct RiddleGridView: View {
                     
                     Text(riddle.question)
                         .font(.headline)
-                        .foregroundColor(.black)
+                        .foregroundColor(.cryptoText)
                         .multilineTextAlignment(.center)
                         .padding()
                     
@@ -383,7 +393,7 @@ struct RiddleGridView: View {
                         .padding()
                         .background(Color.gray.opacity(0.1))
                         .cornerRadius(12)
-                        .foregroundColor(.black)
+                        .foregroundColor(.cryptoText)
                         .accentColor(.cryptoGreen)
                         .autocapitalization(.allCharacters)
                         .disableAutocorrection(true)
@@ -406,7 +416,7 @@ struct RiddleGridView: View {
                     }
                 }
                 .padding(30)
-                .background(Color.white) // Changed to white as per screenshot implication of black text? No, kept existing navy? User text color request implies white bg. I will stick to Navy but maybe white card?
+                .background(Color.cryptoLightNavy) // Changed to white as per screenshot implication of black text? No, kept existing navy? User text color request implies white bg. I will stick to Navy but maybe white card?
                 // Wait, in Step 2912 I made text black. This implies the background is Light/White.
                 // The previous background was Color.cryptoNavy.
                 // If I kept text Black on Navy it would be unreadable.
@@ -428,9 +438,19 @@ struct RiddleGridView: View {
 
 private var badgeAwardOverlay: some View {
     ZStack {
-        Color.white.edgesIgnoringSafeArea(.all)
+        Color.cryptoDarkBlue.edgesIgnoringSafeArea(.all)
+        
+        VStack {
+            Spacer()
+            Text("🎉")
+                .font(.system(size: 100))
+                .shadow(radius: 10)
+        }
+        .padding(.bottom, 20)
+        .zIndex(4)
         
         ConfettiView()
+            .allowsHitTesting(false)
             .zIndex(5)
         
         VStack(spacing: 30) {
@@ -538,7 +558,7 @@ var body: some View {
         }
         .animation(.easeInOut(duration: 0.6), value: isCompleted)
     }
-    .disabled(isCompleted || !isUnlocked)
+    .disabled(!isUnlocked) // Only disable if locked. If completed, it should be enabled for replay tap.
     }
     
     func offsetForQuadrant(_ quadrant: Quadrant) -> CGSize {

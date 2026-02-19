@@ -10,8 +10,11 @@ struct ContentView: View {
     
     var body: some View {
         ZStack {
-            if viewModel.gameState == .menu || viewModel.gameState == .categorySelect {
+            if viewModel.gameState == .menu {
                 HomeView(viewModel: viewModel)
+                    .transition(.opacity)
+            } else if viewModel.gameState == .categorySelect {
+                CategorySelectionView(viewModel: viewModel)
                     .transition(.opacity)
             } else if viewModel.gameState == .calendar {
                 CalendarView(viewModel: viewModel)

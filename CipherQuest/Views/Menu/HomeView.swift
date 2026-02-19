@@ -174,18 +174,7 @@ struct HomeView: View {
             }
             
             // Overlays
-            if viewModel.gameState == .categorySelect {
-                CategorySelectionView(viewModel: viewModel)
-                    .transition(.move(edge: .bottom))
-                    .zIndex(2)
-            }
-            
-            
-            if viewModel.gameState == .calendar {
-                CalendarView(viewModel: viewModel)
-                    .transition(.move(edge: .bottom))
-                    .zIndex(2)
-            }
+            // Handled in ContentView now
 
             
             if viewModel.isShowingHowToSolve {

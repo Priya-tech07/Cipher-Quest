@@ -325,17 +325,11 @@ class GameViewModel: ObservableObject {
     }
     
     private func completeOnboarding() {
-        withAnimation {
+        withAnimation(.easeInOut(duration: 0.6)) {
             isOnboarding = false
             currentOnboardingStep = .completed
             isShowingProfile = false
-        }
-        
-        // Delay the transition to menu for a smoother effect
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
-            withAnimation {
-                self.gameState = .menu
-            }
+            gameState = .menu
         }
         
         UserDefaults.standard.set(true, forKey: "hasCompletedOnboarding")

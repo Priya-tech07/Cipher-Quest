@@ -35,7 +35,7 @@ struct Theme {
         cryptoBlue: "5AC8FA",      // Light Blue
         cryptoText: "102A43",      // Dark Blue/Black
         cryptoSubtext: "486581",   // Muted Blue
-        cryptoSurface: "BCCCDC",   // Surface elements
+        cryptoSurface: "E2E8F0",   // Surface elements
         cryptoError: "D0021B"      // Red
     )
     

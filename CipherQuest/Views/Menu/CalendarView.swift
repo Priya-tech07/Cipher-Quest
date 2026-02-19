@@ -49,9 +49,9 @@ struct CalendarView: View {
                     HStack {
                         Button(action: { viewModel.closeCalendar() }) {
                             Image(systemName: "chevron.left")
-                                .font(.system(size: 20, weight: .bold)) // Slightly larger icon since no text
-                                .foregroundColor(Color(hex: "007AFF"))
-                                .padding(10)
+                            .font(.system(size: 20, weight: .bold)) // Slightly larger icon since no text
+                            .foregroundColor(Color(hex: "007AFF"))
+                            .padding(10)
                         }
                         Spacer()
                     }
@@ -82,7 +82,7 @@ struct CalendarView: View {
                     }
                 }
                 .padding(.horizontal)
-                .transition(.opacity) // Should add animation ideally
+                .transition(.opacity)
                 
                 Spacer()
                 
@@ -176,11 +176,18 @@ struct CalendarView: View {
     }
 }
 
-struct DayCell: View {
+    struct DayCell: View {
     var date: Date
     @ObservedObject var viewModel: GameViewModel
     
     private let calendar = Calendar.current
+    
+    // Optimization: Shared Formatter
+    private static let keyFormatter: DateFormatter = {
+        let f = DateFormatter()
+        f.dateFormat = "yyyyMMdd"
+        return f
+    }()
     
     var isToday: Bool {
         calendar.isDateInToday(date)
@@ -194,10 +201,7 @@ struct DayCell: View {
     }
     
     var isCompleted: Bool {
-        let formatter = DateFormatter()
-        formatter.dateFormat = "yyyyMMdd"
-        let seed = Int(formatter.string(from: date)) ?? 0
-        
+        let seed = Int(Self.keyFormatter.string(from: date)) ?? 0
         return DailyChallengeManager.shared.completedDates.contains(seed)
     }
     

@@ -15,7 +15,7 @@ struct CoinView: View {
         }
         .padding(.horizontal, 12)
         .padding(.vertical, 8)
-        .background(Color.white)
+        .background(Color.cryptoSurface)
         .cornerRadius(20)
         .shadow(color: Color.black.opacity(0.1), radius: 5, x: 0, y: 2)
     }

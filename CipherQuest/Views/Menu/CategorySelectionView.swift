@@ -40,7 +40,7 @@ struct CategorySelectionView: View {
                         .font(.system(size: 14, design: .monospaced))
                         .foregroundColor(.cryptoSubtext)
                 }
-                .padding(.top, 50)
+                .padding(.top, 10)
                 
                 // Categories
                 ScrollView {

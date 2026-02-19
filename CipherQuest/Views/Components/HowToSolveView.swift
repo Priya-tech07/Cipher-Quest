@@ -6,6 +6,7 @@ struct HowToSolveView: View {
     // For now, we'll just show the menu for exploration.
     let cipherType: CipherType?
     let onDismiss: () -> Void
+    @EnvironmentObject var themeManager: ThemeManager
     
     @State private var selectedCipher: CipherType? = nil
     
@@ -46,7 +47,7 @@ struct HowToSolveView: View {
                 .padding(.horizontal)
                 .padding(.bottom, 15)
                 .padding(.top, 50)
-                .background(Color.white.edgesIgnoringSafeArea(.top))
+                .background(Color.cryptoDarkBlue.edgesIgnoringSafeArea(.top))
                 
                 ScrollView {
                     VStack(spacing: 20) {
@@ -74,7 +75,7 @@ struct HowToSolveView: View {
                 }
             }
 
-            .background(Color.white)
+            .background(Color.cryptoDarkBlue)
             .edgesIgnoringSafeArea(.all)
             // Removed corner radius and shadow for full screen look
             
@@ -107,6 +108,7 @@ struct HowToSolveView: View {
 }
 
 struct CipherCard: View {
+    @EnvironmentObject var themeManager: ThemeManager
     let title: String
     let icon: String
     let color: Color
@@ -134,7 +136,7 @@ struct CipherCard: View {
                     .foregroundColor(.gray)
             }
             .padding()
-            .background(Color.white)
+            .background(Color.cryptoLightNavy)
             .cornerRadius(15)
             .shadow(color: Color.black.opacity(0.05), radius: 5, x: 0, y: 2)
             .overlay(
