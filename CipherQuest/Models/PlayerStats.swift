@@ -16,8 +16,10 @@ struct PlayerStats: Codable {
     var hasGrandMasterBadge: Bool = false
 
     
+    var dailyActivity: [String: Int] = [:] // Format: "yyyy-MM-dd" : count
+    
     enum CodingKeys: String, CodingKey {
-        case agentName, coins, levelsCompleted, hintsUsed, currentLevelIndex, experience, completedRiddles, hasDeveloperBadge, hasArchitectBadge, hasSentinelBadge, hasSecurityBadge, hasGrandMasterBadge
+        case agentName, coins, levelsCompleted, hintsUsed, currentLevelIndex, experience, completedRiddles, hasDeveloperBadge, hasArchitectBadge, hasSentinelBadge, hasSecurityBadge, hasGrandMasterBadge, dailyActivity
     }
     
     init() {}
@@ -36,7 +38,7 @@ struct PlayerStats: Codable {
         hasSentinelBadge = try container.decodeIfPresent(Bool.self, forKey: .hasSentinelBadge) ?? false
         hasSecurityBadge = try container.decodeIfPresent(Bool.self, forKey: .hasSecurityBadge) ?? false
         hasGrandMasterBadge = try container.decodeIfPresent(Bool.self, forKey: .hasGrandMasterBadge) ?? false
-
+        dailyActivity = try container.decodeIfPresent([String: Int].self, forKey: .dailyActivity) ?? [:]
     }
     
     func level() -> Int {

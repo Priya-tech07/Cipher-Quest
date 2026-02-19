@@ -8,6 +8,7 @@ struct ProfileView: View {
     
     @State private var isEditingName = false
     @State private var editingName = ""
+    @State private var isShowingStats = false
     
     var body: some View {
         VStack(spacing: 0) {
@@ -239,9 +240,11 @@ struct ProfileView: View {
                             .id("coins_section")
 
                         
-                        StatCard(title: "LEVEL", value: "\(viewModel.playerStats.currentLevelIndex + 1)", icon: "checklist", color: .cryptoGreen)
-                            .walkthroughHighlight(id: "profile_level", enabled: viewModel.isOnboarding)
-                            .id("level_section")
+                        Button(action: { isShowingStats = true }) {
+                            StatCard(title: "STATS", value: "VIEW", icon: "chart.bar.xaxis", color: .cryptoBlue)
+                        }
+                        .walkthroughHighlight(id: "profile_level", enabled: viewModel.isOnboarding)
+                        .id("level_section")
 
                         
                         StatCard(title: "XP", value: "\(viewModel.playerStats.experience)", icon: "bolt.fill", color: .orange)
@@ -250,7 +253,7 @@ struct ProfileView: View {
 
                         
                         Button(action: { viewModel.isShowingRiddleView = true }) {
-                            StatCard(title: "RIDDLES", value: "\(viewModel.playerStats.completedRiddles.count)", icon: "brain.head.profile", color: .cryptoPurple)
+                            StatCard(title: "RIDDLES", value: "VIEW", icon: "brain.head.profile", color: .cryptoPurple)
                         }
                         .walkthroughHighlight(id: "profile_riddles", enabled: viewModel.isOnboarding)
                         .id("riddles_section")
@@ -278,10 +281,22 @@ struct ProfileView: View {
                                     DeveloperBadgeView()
                                         .scaleEffect(0.35)
                                         .frame(width: 70, height: 70)
+                                } else {
+                                    DeveloperBadgeView()
+                                        .grayscale(1.0)
+                                        .opacity(0.2)
+                                        .scaleEffect(0.35)
+                                        .frame(width: 70, height: 70)
                                 }
                                 
                                 if viewModel.playerStats.hasArchitectBadge {
                                     SystemArchitectBadgeView()
+                                        .scaleEffect(0.35)
+                                        .frame(width: 70, height: 70)
+                                } else {
+                                    SystemArchitectBadgeView()
+                                        .grayscale(1.0)
+                                        .opacity(0.2)
                                         .scaleEffect(0.35)
                                         .frame(width: 70, height: 70)
                                 }
@@ -290,16 +305,34 @@ struct ProfileView: View {
                                     CyberSentinelBadgeView()
                                         .scaleEffect(0.35)
                                         .frame(width: 70, height: 70)
+                                } else {
+                                    CyberSentinelBadgeView()
+                                        .grayscale(1.0)
+                                        .opacity(0.2)
+                                        .scaleEffect(0.35)
+                                        .frame(width: 70, height: 70)
                                 }
                                 
                                 if viewModel.playerStats.hasSecurityBadge {
                                     SecurityMasterBadgeView()
                                         .scaleEffect(0.35)
                                         .frame(width: 70, height: 70)
+                                } else {
+                                    SecurityMasterBadgeView()
+                                        .grayscale(1.0)
+                                        .opacity(0.2)
+                                        .scaleEffect(0.35)
+                                        .frame(width: 70, height: 70)
                                 }
                                 
                                 if viewModel.playerStats.hasGrandMasterBadge {
                                     GrandMasterBadgeView()
+                                        .scaleEffect(0.35)
+                                        .frame(width: 70, height: 70)
+                                } else {
+                                    GrandMasterBadgeView()
+                                        .grayscale(1.0)
+                                        .opacity(0.2)
                                         .scaleEffect(0.35)
                                         .frame(width: 70, height: 70)
                                 }
@@ -391,6 +424,9 @@ struct ProfileView: View {
         .edgesIgnoringSafeArea(.all)
         .sheet(isPresented: $viewModel.isShowingRiddleView) {
             RiddleMenuView(viewModel: viewModel, onDismiss: { viewModel.isShowingRiddleView = false })
+        }
+        .sheet(isPresented: $isShowingStats) {
+            StatsView(viewModel: viewModel, onDismiss: { isShowingStats = false })
         }
     }
     

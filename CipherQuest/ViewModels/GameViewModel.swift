@@ -70,11 +70,20 @@ class GameViewModel: ObservableObject {
     init() {
         self.playerStats = UserDefaultsManager.shared.loadStats()
         
+        // Backfill completed riddles if missing but level index > 0
+        if self.playerStats.completedRiddles.isEmpty && self.playerStats.currentLevelIndex > 0 {
+            self.playerStats.completedRiddles = Array(0..<self.playerStats.currentLevelIndex)
+            UserDefaultsManager.shared.saveStats(self.playerStats)
+        }
+        
         // Check if first launch
         if !UserDefaults.standard.bool(forKey: "hasCompletedOnboarding") {
             self.isOnboarding = true
             self.currentOnboardingStep = .menuIntro
         }
+        
+        // Ensure any existing progress is reflected in badges
+        checkAchievements()
     }
     
 
@@ -202,6 +211,13 @@ class GameViewModel: ObservableObject {
         
         playerStats.levelsCompleted += 1
         playerStats.experience += earnedXP
+        playerStats.completedRiddles.append(level.id)
+        
+        // Log Daily Activity
+        let formatter = DateFormatter()
+        formatter.dateFormat = "yyyy-MM-dd"
+        let todayKey = formatter.string(from: Date())
+        playerStats.dailyActivity[todayKey, default: 0] += 1
         
         self.lastEarnedCoins = earnedCoins
         self.lastEarnedXP = earnedXP
@@ -226,8 +242,51 @@ class GameViewModel: ObservableObject {
         }
         UserDefaultsManager.shared.saveStats(playerStats)
         
+        // Check for new badges
+        checkAchievements()
+        
         timerManager.stop()
         gameState = .success
+    }
+    
+    /// Scans player stats and awards badges based on milestones
+    func checkAchievements() {
+        var statsChanged = false
+        
+        // 1. Developer Badge: Awarded for first riddle completion
+        if !playerStats.hasDeveloperBadge && playerStats.completedRiddles.count > 0 {
+            playerStats.hasDeveloperBadge = true
+            statsChanged = true
+        }
+        
+        // 2. XP Milestones
+        let xp = playerStats.experience
+        
+        if xp >= 500 && !playerStats.hasArchitectBadge {
+            playerStats.hasArchitectBadge = true
+            statsChanged = true
+        }
+        
+        if xp >= 1000 && !playerStats.hasSentinelBadge {
+            playerStats.hasSentinelBadge = true
+            statsChanged = true
+        }
+        
+        if xp >= 2000 && !playerStats.hasSecurityBadge {
+            playerStats.hasSecurityBadge = true
+            statsChanged = true
+        }
+        
+        if xp >= 3000 && !playerStats.hasGrandMasterBadge {
+            playerStats.hasGrandMasterBadge = true
+            statsChanged = true
+        }
+        
+        if statsChanged {
+            UserDefaultsManager.shared.saveStats(playerStats)
+            // Force UI update
+            objectWillChange.send()
+        }
     }
     
     func nextLevel() {
