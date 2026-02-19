@@ -46,7 +46,7 @@ struct HowToSolveView: View {
                 }
                 .padding(.horizontal)
                 .padding(.bottom, 15)
-                .padding(.top, 50)
+                .padding(.top, 70)
                 .background(Color.cryptoDarkBlue.edgesIgnoringSafeArea(.top))
                 
                 ScrollView {
@@ -54,7 +54,7 @@ struct HowToSolveView: View {
                         Text("SELECT A MODULE")
                             .font(.system(size: 14, weight: .bold, design: .monospaced))
                             .foregroundColor(.cryptoSubtext)
-                            .padding(.top)
+                     
                         
                         // Menu Cards
                         CipherCard(title: "ATBASH CIPHER", icon: "arrow.up.arrow.down", color: .cryptoBlue) {
@@ -71,7 +71,6 @@ struct HowToSolveView: View {
                         
 
                     }
-                    .padding()
                 }
             }
 
