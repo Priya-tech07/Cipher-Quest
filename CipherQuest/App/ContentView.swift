@@ -10,18 +10,29 @@ struct ContentView: View {
     
     var body: some View {
         ZStack {
-            if viewModel.gameState == .menu {
+            // Base Layer: HomeView
+            // Keep Home visible for menu, categorySelect, and calendar to prevent transition gaps
+            if viewModel.gameState == .menu || viewModel.gameState == .categorySelect || viewModel.gameState == .calendar {
                 HomeView(viewModel: viewModel)
                     .transition(.opacity)
-            } else if viewModel.gameState == .categorySelect {
-                CategorySelectionView(viewModel: viewModel)
-                    .transition(.opacity)
-            } else if viewModel.gameState == .calendar {
-                CalendarView(viewModel: viewModel)
-                    .transition(.opacity)
+                    .zIndex(0)
             } else {
-                PuzzleView(viewModel: viewModel)
+                 PuzzleView(viewModel: viewModel)
                     .transition(.opacity)
+                    .zIndex(0)
+            }
+            
+            // Overlays
+            if viewModel.gameState == .categorySelect {
+                CategorySelectionView(viewModel: viewModel)
+                    .transition(.opacity) // Default to opacity for now, or slide if preferred
+                    .zIndex(1)
+            }
+            
+            if viewModel.gameState == .calendar {
+                CalendarView(viewModel: viewModel)
+                    .transition(.move(edge: .bottom))
+                    .zIndex(2)
             }
         }
         .animation(.easeInOut(duration: 0.6), value: viewModel.gameState)
