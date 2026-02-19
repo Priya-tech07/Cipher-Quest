@@ -162,13 +162,13 @@ struct HomeView: View {
                     .walkthroughHighlight(id: "how_to_solve_button", enabled: viewModel.isOnboarding)
 
                     
-                    Text("SECURE CONNECTION ESTABLISHED")
-                        .font(.system(size: 10, design: .monospaced))
-                        .foregroundColor(.cryptoSubtext.opacity(0.5))
+                    // Text("SECURE CONNECTION ESTABLISHED")
+                    //     .font(.system(size: 10, design: .monospaced))
+                    //     .foregroundColor(.cryptoSubtext.opacity(0.5))
                     
-                    Text("V 1.0.0")
-                        .font(.caption2)
-                        .foregroundColor(.gray)
+                    // Text("V 1.0.0")
+                    //     .font(.caption2)
+                    //     .foregroundColor(.gray)
                 }
                 .padding(.bottom, 60)
             }

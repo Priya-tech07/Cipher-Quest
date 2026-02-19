@@ -112,9 +112,9 @@ struct ProfileView: View {
                             }
                         }
                         
-                        Text("CODENAME")
-                            .font(.system(size: 10, weight: .bold, design: .monospaced))
-                            .foregroundColor(.cryptoSubtext)
+                        // Text("CODENAME")
+                        //     .font(.system(size: 10, weight: .bold, design: .monospaced))
+                        //     .foregroundColor(.cryptoSubtext)
                     }
                     .padding(.top, -10)
                     
@@ -335,6 +335,7 @@ struct ProfileView: View {
 
                     
                     Spacer(minLength: 50)
+                        .id("bottom_spacer")
                 }
                 .onChange(of: viewModel.currentOnboardingStep) { _, newStep in
                     withAnimation {
@@ -348,7 +349,7 @@ struct ProfileView: View {
                         case .profileRiddles:
                             proxy.scrollTo("riddles_section", anchor: .center)
                         case .profileBadges:
-                            proxy.scrollTo("badges_section", anchor: .bottom)
+                            proxy.scrollTo("bottom_spacer", anchor: .bottom)
                         case .profileSettings:
                             proxy.scrollTo("settings_section", anchor: .top)
                         case .profileXP:
@@ -372,7 +373,7 @@ struct ProfileView: View {
                             case .profileRiddles:
                                 proxy.scrollTo("riddles_section", anchor: .center)
                             case .profileBadges:
-                                proxy.scrollTo("badges_section", anchor: .bottom)
+                                proxy.scrollTo("bottom_spacer", anchor: .bottom)
                             case .profileSettings:
                                 proxy.scrollTo("settings_section", anchor: .top)
                             case .profileXP:
