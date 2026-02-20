@@ -14,7 +14,7 @@ let package = Package(
     ],
     products: [
         .iOSApplication(
-            name: "Cipher",
+            name: "Cipher Quest",
             targets: ["AppModule"],
             teamIdentifier: "YWBN65B9JA",
             displayVersion: "1.0",

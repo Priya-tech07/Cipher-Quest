@@ -20,6 +20,7 @@ struct RiddleGridView: View {
     @State private var showFeedback = false
     @State private var feedbackMsg = ""
     @State private var showBadgeAward = false
+    @State private var showCelebrationEmoji = false
     
     // Riddles Data based on Level
     var riddles: [Riddle] {
@@ -69,14 +70,7 @@ struct RiddleGridView: View {
             VStack(spacing: 20) {
                 // Header
                 HStack {
-                    Button(action: onDismiss) {
-                        Image(systemName: "arrow.left")
-                            .font(.title2)
-                            .foregroundColor(.cryptoText)
-                            .padding(10)
-                            .background(Color.cryptoNavy)
-                            .clipShape(Circle())
-                    }
+                    BackButton(action: onDismiss)
                     Spacer()
                     Text("SECURE RIDDLES")
                         .font(.system(size: 18, weight: .black, design: .monospaced))
@@ -186,11 +180,13 @@ struct RiddleGridView: View {
             // Mystery Popup Overlay
             if let riddle = selectedRiddle {
                 mysteryBoxOverlay(for: riddle)
+                    .transition(.move(edge: .top).combined(with: .opacity))
             }
             
             // Completion Animation Overlay
             if showBadgeAward {
                 badgeAwardOverlay
+                    .transition(.move(edge: .top).combined(with: .opacity))
             }
         }
     }
@@ -204,11 +200,11 @@ struct RiddleGridView: View {
     private func handleRiddleTap(_ riddle: Riddle) {
         if viewModel.playerStats.experience >= riddle.xpRequired {
             if !viewModel.playerStats.completedRiddles.contains(riddle.id) {
-                withAnimation { selectedRiddle = riddle }
+                withAnimation(.spring(response: 0.5, dampingFraction: 0.8)) { selectedRiddle = riddle }
                 riddleInput = ""
             } else if isLevelComplete {
                 // Allow replaying the celebration animation if level is complete
-                withAnimation { showBadgeAward = true }
+                withAnimation(.spring(response: 0.5, dampingFraction: 0.8)) { showBadgeAward = true }
             }
         }
     }
@@ -435,9 +431,20 @@ private var badgeAwardOverlay: some View {
             Text("🎉")
                 .font(.system(size: 100))
                 .shadow(radius: 10)
+                .scaleEffect(showCelebrationEmoji ? 1 : 0.3)
+                .opacity(showCelebrationEmoji ? 1 : 0)
+                .animation(.spring(response: 0.5, dampingFraction: 0.6), value: showCelebrationEmoji)
         }
         .padding(.bottom, 20)
         .zIndex(4)
+        .onAppear {
+            showCelebrationEmoji = true
+            DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) {
+                withAnimation(.easeOut(duration: 0.5)) {
+                    showCelebrationEmoji = false
+                }
+            }
+        }
         
         ConfettiView()
             .allowsHitTesting(false)

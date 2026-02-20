@@ -50,12 +50,7 @@ struct CalendarView: View {
                     }
                     
                     HStack {
-                        Button(action: { viewModel.closeCalendar() }) {
-                            Image(systemName: "chevron.left")
-                                .font(.system(size: isIPad ? 28 : 20, weight: .bold))
-                                .foregroundColor(Color(hex: "007AFF"))
-                                .padding(10)
-                        }
+                        BackButton(action: { viewModel.closeCalendar() })
                         Spacer()
                         
                         HStack(spacing: 12) {

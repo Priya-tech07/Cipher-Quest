@@ -65,10 +65,13 @@ struct HomeView: View {
                         .foregroundColor(.cryptoGreen)
                         .shadow(color: .cryptoGreen.opacity(0.4), radius: 10, x: 0, y: 5)
                     
-                    Text("CIPHER\nQUEST")
-                        .font(.system(size: 56, weight: .black, design: .monospaced))
+                    Text("CIPHER QUEST")
+                        .font(.system(size: 40, weight: .black, design: .monospaced))
                         .multilineTextAlignment(.center)
                         .foregroundColor(.cryptoText)
+                        .padding(.horizontal)
+                        .minimumScaleFactor(0.5)
+                        .lineLimit(1)
                     
                     Text("CRACK THE CODE")
                         .font(.custom("Menlo", size: 14))

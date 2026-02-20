@@ -36,17 +36,10 @@ struct CipherTutorialView: View {
         VStack(spacing: 20) {
             // Header
             HStack {
-                Button(action: {
+                BackButton(action: {
                     withAnimation { isPresented = false }
-                }) {
-                    HStack(spacing: 5) {
-                        Image(systemName: "chevron.left")
-                        Text("Back")
-                    }
-                    .font(.system(size: 16, weight: .bold, design: .monospaced))
-                    .foregroundColor(.cryptoGreen)
-                    .padding(10)
-                }
+                })
+
                 
                 Spacer()
                 
@@ -57,7 +50,7 @@ struct CipherTutorialView: View {
                 Spacer()
                 
                 // Placeholder to balance
-                Image(systemName: "chevron.left").opacity(0)
+                BackButton(action: {}).opacity(0)
             }
             .padding(.horizontal)
             .padding(.bottom, 15)

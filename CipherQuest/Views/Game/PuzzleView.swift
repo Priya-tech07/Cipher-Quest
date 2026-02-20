@@ -13,15 +13,7 @@ struct PuzzleView: View {
             VStack(spacing: 25) {
                 // Header
                 HStack {
-                    Button(action: { viewModel.gameState = .menu }) {
-                        HStack(spacing: 5) {
-                            Image(systemName: "chevron.left")
-                            Text("Back")
-                        }
-                        .font(.system(size: 16, weight: .bold, design: .monospaced))
-                        .foregroundColor(.cryptoGreen)
-                        .padding(10)
-                    }
+                    BackButton(action: { viewModel.gameState = .menu })
                     Spacer()
                     CoinView(amount: viewModel.playerStats.coins)
                 }

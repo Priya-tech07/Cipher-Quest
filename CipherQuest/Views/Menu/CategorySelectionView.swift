@@ -15,20 +15,13 @@ struct CategorySelectionView: View {
                     ZStack {
                         // Back Button (Aligned to Leading)
                         HStack {
-                            Button(action: {
+                            BackButton(action: {
                                 withAnimation {
                                     viewModel.gameState = .menu
                                 }
-                            }) {
-                            Image(systemName: "chevron.left")
-                                .font(.system(size: 24, weight: .bold)) // Adjusted size for icon-only
-                                .foregroundColor(Color(hex: "007AFF")) // System Blue
-                                .padding(10) // Ensure touch target
-                                .background(Color.black.opacity(0.001))
-                            }
+                            })
                             Spacer()
                         }
-                        .padding(.leading, 10)
                         
                         // Centered Title
                         Text("SELECT CATEGORY")

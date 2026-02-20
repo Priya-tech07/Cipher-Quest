@@ -16,15 +16,7 @@ struct ProfileView: View {
             
             // Header
             HStack {
-                Button(action: onDismiss) {
-                    HStack(spacing: 5) {
-                        Image(systemName: "chevron.left")
-                        Text("Back")
-                    }
-                    .font(.system(size: 16, weight: .bold, design: .monospaced))
-                    .foregroundColor(.cryptoGreen)
-                    .padding(10)
-                }
+                BackButton(action: onDismiss)
                 
                 Spacer()
                 
@@ -35,14 +27,7 @@ struct ProfileView: View {
                 Spacer()
                 
                 // Hidden placeholder for alignment
-                Button(action: {}) {
-                    HStack(spacing: 5) {
-                        Image(systemName: "chevron.left")
-                        Text("Back")
-                    }
-                    .font(.system(size: 16, weight: .bold, design: .monospaced))
-                    .padding(10)
-                }
+                BackButton(action: {})
                 .opacity(0)
             }
             .padding(.horizontal)
@@ -340,6 +325,7 @@ struct ProfileView: View {
                     Spacer(minLength: 50)
                         .id("bottom_spacer")
                 }
+                .frame(maxWidth: .infinity)
                 .onChange(of: viewModel.currentOnboardingStep) { _, newStep in
                     withAnimation {
                         switch newStep {

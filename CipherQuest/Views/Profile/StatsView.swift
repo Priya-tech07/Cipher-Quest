@@ -61,22 +61,15 @@ struct StatsView: View {
             VStack(spacing: 20) {
                 // Header
                 HStack {
-                    Button(action: onDismiss) {
-                        Image(systemName: "chevron.left")
-                            .font(.system(size: 20, weight: .bold))
-                            .foregroundColor(.cryptoGreen)
-                            .padding()
-                    }
+                    BackButton(action: onDismiss)
                     Spacer()
                     Text("MISSION STATS")
                         .font(.system(size: 20, weight: .black, design: .monospaced))
                         .foregroundColor(.cryptoText)
                     Spacer()
                     // Spacer to balance the back button
-                    Image(systemName: "chevron.left")
-                        .font(.system(size: 20, weight: .bold))
-                        .foregroundColor(.clear)
-                        .padding()
+                    BackButton(action: {})
+                        .opacity(0)
                 }
                 .padding(.top, 50)
                 

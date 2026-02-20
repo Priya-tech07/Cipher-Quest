@@ -50,15 +50,7 @@ struct RiddleMenuView: View {
                         
                         // Left & Right Items
                         HStack {
-                            Button(action: onDismiss) {
-                                HStack(spacing: 5) {
-                                    Image(systemName: "chevron.left")
-                                        .font(.title2)
-                                    Text("Back")
-                                        .font(.system(size: 16, weight: .bold, design: .monospaced))
-                                }
-                                .foregroundColor(.cryptoGreen)
-                            }
+                            BackButton(action: onDismiss)
                             
                             Spacer()
                             

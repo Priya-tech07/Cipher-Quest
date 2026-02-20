@@ -15,15 +15,7 @@ struct HowToSolveView: View {
             VStack(spacing: 0) {
                 // Header
                 HStack {
-                    Button(action: onDismiss) {
-                        HStack(spacing: 5) {
-                            Image(systemName: "chevron.left")
-                            Text("Back")
-                        }
-                        .font(.system(size: 16, weight: .bold, design: .monospaced))
-                        .foregroundColor(.cryptoGreen)
-                        .padding(10) // Increase hit area
-                    }
+                    BackButton(action: onDismiss)
                     
                     Spacer()
                     
@@ -34,14 +26,7 @@ struct HowToSolveView: View {
                     Spacer()
                     
                     // Hidden placeholder for alignment
-                    Button(action: {}) {
-                        HStack(spacing: 5) {
-                            Image(systemName: "chevron.left")
-                            Text("Back")
-                        }
-                        .font(.system(size: 16, weight: .bold, design: .monospaced))
-                        .padding(10)
-                    }
+                    BackButton(action: {})
                     .opacity(0)
                 }
                 .padding(.horizontal)
