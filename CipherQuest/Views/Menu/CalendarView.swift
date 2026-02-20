@@ -12,136 +12,150 @@ struct CalendarView: View {
     @State private var monthChangeDirection: Int = 0 
     
     var body: some View {
-        VStack(spacing: 20) {
-            // Header
-            ZStack {
-                HStack(spacing: 8) {
-                    Menu {
-                        ForEach(1...12, id: \.self) { index in
-                            Button(Calendar.current.monthSymbols[index - 1]) {
-                                setMonth(index)
+        GeometryReader { geometry in
+            let isIPad = geometry.size.width > 600
+            let horizontalPadding: CGFloat = isIPad ? 60 : 20
+            let availableWidth = geometry.size.width - (horizontalPadding * 2)
+            // 7 columns, plus spacing
+            let spacing: CGFloat = isIPad ? 20 : 10
+            let daySize = (availableWidth - (spacing * 6)) / 7
+            
+            VStack(spacing: isIPad ? 30 : 20) {
+                // Header
+                ZStack {
+                    HStack(spacing: 8) {
+                        Menu {
+                            ForEach(1...12, id: \.self) { index in
+                                Button(Calendar.current.monthSymbols[index - 1]) {
+                                    setMonth(index)
+                                }
                             }
-                        }
-                    } label: {
-                        Text(currentMonthName())
-                            .font(.system(size: 20, weight: .bold, design: .monospaced))
-                            .foregroundColor(.cryptoText)
-                    }
-                    
-                    Menu {
-                        ForEach(2022...2030, id: \.self) { year in
-                            Button(String(year)) {
-                                setYear(year)
-                            }
-                        }
-                    } label: {
-                        Text(currentYearString())
-                            .font(.system(size: 20, weight: .bold, design: .monospaced))
-                            .foregroundColor(.cryptoText)
-                    }
-                }
-                
-                HStack {
-                    Button(action: { viewModel.closeCalendar() }) {
-                        Image(systemName: "chevron.left")
-                            .font(.system(size: 20, weight: .bold))
-                            .foregroundColor(Color(hex: "007AFF"))
-                            .padding(10)
-                    }
-                    Spacer()
-                    
-                    HStack(spacing: 12) {
-                        Button {
-                            changeMonth(by: -1)
                         } label: {
-                            Image(systemName: "chevron.left.circle")
-                                .font(.title2)
-                                .foregroundColor(.cryptoSubtext)
+                            Text(currentMonthName())
+                                .font(.system(size: isIPad ? 32 : 20, weight: .bold, design: .monospaced))
+                                .foregroundColor(.cryptoText)
                         }
                         
-                        Button {
-                            changeMonth(by: 1)
+                        Menu {
+                            ForEach(2022...2030, id: \.self) { year in
+                                Button(String(year)) {
+                                    setYear(year)
+                                }
+                            }
                         } label: {
-                            Image(systemName: "chevron.right.circle")
-                                .font(.title2)
-                                .foregroundColor(.cryptoSubtext)
+                            Text(currentYearString())
+                                .font(.system(size: isIPad ? 32 : 20, weight: .bold, design: .monospaced))
+                                .foregroundColor(.cryptoText)
+                        }
+                    }
+                    
+                    HStack {
+                        Button(action: { viewModel.closeCalendar() }) {
+                            Image(systemName: "chevron.left")
+                                .font(.system(size: isIPad ? 28 : 20, weight: .bold))
+                                .foregroundColor(Color(hex: "007AFF"))
+                                .padding(10)
+                        }
+                        Spacer()
+                        
+                        HStack(spacing: 12) {
+                            Button {
+                                changeMonth(by: -1)
+                            } label: {
+                                Image(systemName: "chevron.left.circle")
+                                    .font(isIPad ? .largeTitle : .title2)
+                                    .foregroundColor(.cryptoSubtext)
+                            }
+                            
+                            Button {
+                                changeMonth(by: 1)
+                            } label: {
+                                Image(systemName: "chevron.right.circle")
+                                    .font(isIPad ? .largeTitle : .title2)
+                                    .foregroundColor(.cryptoSubtext)
+                            }
                         }
                     }
                 }
-            }
-            .padding(.horizontal)
-            .padding(.top, 70)
-            
-            // Days of Week
-            HStack {
-                ForEach(days, id: \.self) { day in
-                    Text(day)
-                        .font(.caption)
-                        .fontWeight(.bold)
-                        .foregroundColor(.cryptoSubtext)
-                        .frame(maxWidth: .infinity)
-                }
-            }
-            .padding(.horizontal)
-            
-            // Calendar Grid - Non-Lazy for instant rendering
-            VStack(spacing: 15) {
-                let items = daysInMonth()
-                let rows = Int(ceil(Double(items.count) / 7.0))
+                .padding(.horizontal, horizontalPadding)
+                .padding(.top, isIPad ? 50 : 70)
                 
-                ForEach(0..<rows, id: \.self) { row in
-                    HStack(spacing: 15) {
-                        ForEach(0..<7, id: \.self) { column in
-                            let index = row * 7 + column
-                            if index < items.count {
-                                let item = items[index]
-                                if let date = item.date {
-                                    DayCell(date: date, viewModel: viewModel)
+                // Days of Week
+                HStack(spacing: spacing) {
+                    ForEach(days, id: \.self) { day in
+                        Text(day)
+                            .font(isIPad ? .title3 : .caption)
+                            .fontWeight(.bold)
+                            .foregroundColor(.cryptoSubtext)
+                            .frame(width: daySize)
+                    }
+                }
+                .padding(.horizontal, horizontalPadding)
+                
+                // Calendar Grid - Non-Lazy for instant rendering
+                VStack(spacing: spacing) {
+                    let items = daysInMonth()
+                    let rows = Int(ceil(Double(items.count) / 7.0))
+                    
+                    ForEach(0..<rows, id: \.self) { row in
+                        HStack(spacing: spacing) {
+                            ForEach(0..<7, id: \.self) { column in
+                                let index = row * 7 + column
+                                if index < items.count {
+                                    let item = items[index]
+                                    if let date = item.date {
+                                        DayCell(date: date, viewModel: viewModel, size: daySize, isIPad: isIPad)
+                                    } else {
+                                        Rectangle()
+                                            .foregroundColor(.clear)
+                                            .frame(width: daySize, height: daySize)
+                                    }
                                 } else {
                                     Rectangle()
                                         .foregroundColor(.clear)
-                                        .frame(width: 40, height: 40)
+                                        .frame(width: daySize, height: daySize)
                                 }
-                            } else {
-                                Rectangle()
-                                    .foregroundColor(.clear)
-                                    .frame(width: 40, height: 40)
                             }
                         }
                     }
                 }
-            }
-            .padding(.horizontal)
-            .id(currentMonth)
-            .transition(gridTransition)
-            
-            Spacer()
-            
-            // Stats
-            HStack(spacing: 30) {
-                VStack {
-                    Text("\(DailyChallengeManager.shared.currentStreak)")
-                        .font(.title)
-                        .fontWeight(.bold)
-                        .foregroundColor(.cryptoGreen)
-                    Text("Day Streak")
-                        .font(.caption)
-                        .foregroundColor(.cryptoSubtext)
-                }
+                .padding(.horizontal, horizontalPadding)
+                .id(currentMonth)
+                .transition(gridTransition)
                 
-                VStack {
-                    Image(systemName: "checkmark.seal.fill")
-                        .font(.title)
-                        .foregroundColor(.cryptoBlue)
-                    Text("Completed")
-                        .font(.caption)
-                        .foregroundColor(.cryptoSubtext)
+                Spacer()
+                
+                // Stats
+                HStack(spacing: 30) {
+                    Spacer()
+                    VStack {
+                        Text("\(DailyChallengeManager.shared.currentStreak)")
+                            .font(isIPad ? .system(size: 48, weight: .bold) : .title)
+                            .fontWeight(.bold)
+                            .foregroundColor(.cryptoGreen)
+                        Text("Day Streak")
+                            .font(isIPad ? .title3 : .caption)
+                            .foregroundColor(.cryptoSubtext)
+                    }
+                    .frame(maxWidth: .infinity)
+                    
+                    VStack {
+                        Image(systemName: "checkmark.seal.fill")
+                            .font(isIPad ? .system(size: 40) : .title)
+                            .foregroundColor(.cryptoBlue)
+                        Text("Completed")
+                            .font(isIPad ? .title3 : .caption)
+                            .foregroundColor(.cryptoSubtext)
+                    }
+                    .frame(maxWidth: .infinity)
+                    Spacer()
                 }
+                .padding(isIPad ? 30 : 15)
+                .background(Color.cryptoNavy)
+                .cornerRadius(15)
+                .padding(.horizontal, horizontalPadding)
+                .padding(.bottom, 30)
             }
-            .padding()
-            .background(Color.cryptoNavy)
-            .cornerRadius(15)
-            .padding(.bottom, 30)
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .background(Color.cryptoDarkBlue)
@@ -265,6 +279,8 @@ struct CalendarView: View {
 struct DayCell: View {
     var date: Date
     @ObservedObject var viewModel: GameViewModel
+    var size: CGFloat
+    var isIPad: Bool
     
     private let calendar = Calendar.current
     
@@ -298,15 +314,15 @@ struct DayCell: View {
         }) {
             VStack {
                 Text("\(calendar.component(.day, from: date))")
-                    .font(.system(size: 16, weight: .bold))
+                    .font(.system(size: isIPad ? 24 : 16, weight: .bold))
                     .foregroundColor(textColor)
             }
-            .frame(width: 40, height: 40)
+            .frame(width: size, height: size)
             .background(backgroundColor)
             .clipShape(Circle())
             .overlay(
                 Circle()
-                    .stroke(borderColor, lineWidth: 2)
+                    .stroke(borderColor, lineWidth: isIPad ? 4 : 2)
             )
         }
         .buttonStyle(PlainButtonStyle())

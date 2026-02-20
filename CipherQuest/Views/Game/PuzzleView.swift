@@ -221,7 +221,7 @@ struct PuzzleView: View {
             }
         }
 
-        .sheet(isPresented: Binding(
+        .fullScreenCover(isPresented: Binding(
             get: { viewModel.gameState == .success },
             set: { _ in }
         )) {

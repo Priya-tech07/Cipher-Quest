@@ -234,7 +234,7 @@ struct ProfileView: View {
                     .id("xp_section")
                     
                     // Stats Grid
-                    LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())], spacing: 15) {
+                    LazyVGrid(columns: [GridItem(.adaptive(minimum: 150), spacing: 15)], spacing: 15) {
                         StatCard(title: "COINS", value: "\(viewModel.playerStats.coins)", icon: "centsign.circle.fill", color: .yellow)
                             .walkthroughHighlight(id: "profile_coins", enabled: viewModel.isOnboarding)
                             .id("coins_section")
@@ -253,7 +253,7 @@ struct ProfileView: View {
 
                         
                         Button(action: { viewModel.isShowingRiddleView = true }) {
-                            StatCard(title: "RIDDLES", value: "VIEW", icon: "brain.head.profile", color: .cryptoPurple)
+                            StatCard(title: "RIDDLES", value: "\(viewModel.playerStats.completedRiddles.count)", icon: "brain.head.profile", color: .cryptoPurple)
                         }
                         .walkthroughHighlight(id: "profile_riddles", enabled: viewModel.isOnboarding)
                         .id("riddles_section")
@@ -271,70 +271,40 @@ struct ProfileView: View {
                             .padding(.top, 15) // Added top padding inside the new container
                         
                         // Static Badge Collection
-                        VStack {
+                        VStack(alignment: .leading) {
                             let columns = [
-                                GridItem(.adaptive(minimum: 70, maximum: 70), spacing: 20)
+                                GridItem(.adaptive(minimum: 60), spacing: 10)
                             ]
                             
-                            LazyVGrid(columns: columns, spacing: 20) {
+                            LazyVGrid(columns: columns, alignment: .leading, spacing: 10) {
                                 if viewModel.playerStats.hasDeveloperBadge {
                                     DeveloperBadgeView()
                                         .scaleEffect(0.35)
-                                        .frame(width: 70, height: 70)
-                                } else {
-                                    DeveloperBadgeView()
-                                        .grayscale(1.0)
-                                        .opacity(0.2)
-                                        .scaleEffect(0.35)
-                                        .frame(width: 70, height: 70)
+                                        .frame(width: 60, height: 60)
                                 }
                                 
                                 if viewModel.playerStats.hasArchitectBadge {
                                     SystemArchitectBadgeView()
                                         .scaleEffect(0.35)
-                                        .frame(width: 70, height: 70)
-                                } else {
-                                    SystemArchitectBadgeView()
-                                        .grayscale(1.0)
-                                        .opacity(0.2)
-                                        .scaleEffect(0.35)
-                                        .frame(width: 70, height: 70)
+                                        .frame(width: 60, height: 60)
                                 }
                                 
                                 if viewModel.playerStats.hasSentinelBadge {
                                     CyberSentinelBadgeView()
                                         .scaleEffect(0.35)
-                                        .frame(width: 70, height: 70)
-                                } else {
-                                    CyberSentinelBadgeView()
-                                        .grayscale(1.0)
-                                        .opacity(0.2)
-                                        .scaleEffect(0.35)
-                                        .frame(width: 70, height: 70)
+                                        .frame(width: 60, height: 60)
                                 }
                                 
                                 if viewModel.playerStats.hasSecurityBadge {
                                     SecurityMasterBadgeView()
                                         .scaleEffect(0.35)
-                                        .frame(width: 70, height: 70)
-                                } else {
-                                    SecurityMasterBadgeView()
-                                        .grayscale(1.0)
-                                        .opacity(0.2)
-                                        .scaleEffect(0.35)
-                                        .frame(width: 70, height: 70)
+                                        .frame(width: 60, height: 60)
                                 }
                                 
                                 if viewModel.playerStats.hasGrandMasterBadge {
                                     GrandMasterBadgeView()
                                         .scaleEffect(0.35)
-                                        .frame(width: 70, height: 70)
-                                } else {
-                                    GrandMasterBadgeView()
-                                        .grayscale(1.0)
-                                        .opacity(0.2)
-                                        .scaleEffect(0.35)
-                                        .frame(width: 70, height: 70)
+                                        .frame(width: 60, height: 60)
                                 }
                             }
                             .padding(.horizontal)
@@ -422,10 +392,10 @@ struct ProfileView: View {
         }
         .background(Color.cryptoDarkBlue)
         .edgesIgnoringSafeArea(.all)
-        .sheet(isPresented: $viewModel.isShowingRiddleView) {
+        .fullScreenCover(isPresented: $viewModel.isShowingRiddleView) {
             RiddleMenuView(viewModel: viewModel, onDismiss: { viewModel.isShowingRiddleView = false })
         }
-        .sheet(isPresented: $isShowingStats) {
+        .fullScreenCover(isPresented: $isShowingStats) {
             StatsView(viewModel: viewModel, onDismiss: { isShowingStats = false })
         }
     }

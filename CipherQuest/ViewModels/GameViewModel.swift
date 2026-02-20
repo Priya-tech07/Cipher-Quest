@@ -70,16 +70,29 @@ class GameViewModel: ObservableObject {
     init() {
         self.playerStats = UserDefaultsManager.shared.loadStats()
         
-        // Backfill completed riddles if missing but level index > 0
-        if self.playerStats.completedRiddles.isEmpty && self.playerStats.currentLevelIndex > 0 {
-            self.playerStats.completedRiddles = Array(0..<self.playerStats.currentLevelIndex)
-            UserDefaultsManager.shared.saveStats(self.playerStats)
-        }
+        // Backfill logic removed to prevent inflating riddle count for skipped levels
+        // if self.playerStats.completedRiddles.isEmpty && self.playerStats.currentLevelIndex > 0 { ... }
         
         // Check if first launch
         if !UserDefaults.standard.bool(forKey: "hasCompletedOnboarding") {
             self.isOnboarding = true
             self.currentOnboardingStep = .menuIntro
+        }
+        
+        // One-time fix for user who had their stats inflated by the backfill bug
+        // They reported having solved only 1 riddle but seeing 6.
+        if !UserDefaults.standard.bool(forKey: "hasFixedRiddleCount_v1") {
+            // Identifying the specific bugged state (Level 7, 0-5 filled)
+            let buggedState = Array(0..<6)
+            if self.playerStats.currentLevelIndex == 6 && self.playerStats.completedRiddles == buggedState {
+                print("DEBUG: Fixing inflated stats...")
+                // Reset to 1 completed riddle (Level 2)
+                self.playerStats.completedRiddles = [0]
+                self.playerStats.currentLevelIndex = 1
+                self.playerStats.levelsCompleted = 1
+                UserDefaultsManager.shared.saveStats(self.playerStats)
+            }
+            UserDefaults.standard.set(true, forKey: "hasFixedRiddleCount_v1")
         }
         
         // Ensure any existing progress is reflected in badges

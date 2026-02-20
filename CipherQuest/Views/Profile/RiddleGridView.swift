@@ -383,7 +383,7 @@ struct RiddleGridView: View {
                     
                     Text(riddle.question)
                         .font(.headline)
-                        .foregroundColor(.cryptoText)
+                        .foregroundColor(.black) // Ensure readable on white background
                         .multilineTextAlignment(.center)
                         .padding()
                     
@@ -393,7 +393,7 @@ struct RiddleGridView: View {
                         .padding()
                         .background(Color.gray.opacity(0.1))
                         .cornerRadius(12)
-                        .foregroundColor(.cryptoText)
+                        .foregroundColor(.black) // Ensure readable on white background
                         .accentColor(.cryptoGreen)
                         .autocapitalization(.allCharacters)
                         .disableAutocorrection(true)
@@ -416,17 +416,7 @@ struct RiddleGridView: View {
                     }
                 }
                 .padding(30)
-                .background(Color.cryptoLightNavy) // Changed to white as per screenshot implication of black text? No, kept existing navy? User text color request implies white bg. I will stick to Navy but maybe white card?
-                // Wait, in Step 2912 I made text black. This implies the background is Light/White.
-                // The previous background was Color.cryptoNavy.
-                // If I kept text Black on Navy it would be unreadable.
-                // The user complained "i cant see the text color it is in whicte change to black".
-                // This implies the background IS white/light.
-                // Let me check line 258 in previous view: `.background(Color.cryptoNavy)`.
-                // Navy is dark. Black text on Navy is bad.
-                // So the user probably wants a lighter background too? OR the screenshot shows a light background.
-                // Screenshot 1 has a very light background (white/light blue).
-                // I should change the background to Color.white or Color(white: 0.95).
+                .frame(maxWidth: 500) // Constrain width for iPad
                 .background(Color.white)
                 .cornerRadius(25)
                 .padding(40)
