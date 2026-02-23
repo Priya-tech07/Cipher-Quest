@@ -71,7 +71,7 @@ struct StatsView: View {
                     BackButton(action: {})
                         .opacity(0)
                 }
-                .padding(.top, 50)
+                .padding(.top, 10)
                 
                 ScrollView {
                     VStack(spacing: 25) {
