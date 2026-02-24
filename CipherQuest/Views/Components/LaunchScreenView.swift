@@ -5,58 +5,25 @@ struct LaunchScreenView: View {
     
     var body: some View {
         ZStack {
-            // Solid white background as requested
+            // Solid white background
             Color.white.edgesIgnoringSafeArea(.all)
             
-            // Cyber scanline effect
-            GeometryReader { geo in
-                VStack(spacing: 0) {
-                    ForEach(0..<Int(geo.size.height / 4), id: \.self) { _ in
-                        Rectangle()
-                            .fill(Color.black.opacity(0.03))
-                            .frame(height: 1)
-                        Spacer(minLength: 3)
-                    }
-                }
-            }
-            .edgesIgnoringSafeArea(.all)
-            
             VStack(spacing: 40) {
-                // Centered App Logo with pop-up & chromatic aberration
-                ZStack {
-                    // RGB Shift layers for game feel
-                    Image("AppLogo")
-                        .resizable()
-                        .scaledToFit()
-                        .frame(width: 180, height: 180)
-                        .clipShape(RoundedRectangle(cornerRadius: 36))
-                        .offset(x: glitchOffset, y: 0)
-                        .colorMultiply(.red.opacity(glitchOpacity))
-                    
-                    Image("AppLogo")
-                        .resizable()
-                        .scaledToFit()
-                        .frame(width: 180, height: 180)
-                        .clipShape(RoundedRectangle(cornerRadius: 36))
-                        .offset(x: -glitchOffset, y: 0)
-                        .colorMultiply(.cyan.opacity(glitchOpacity))
-                    
-                    Image("AppLogo")
-                        .resizable()
-                        .scaledToFit()
-                        .frame(width: 180, height: 180)
-                        .clipShape(RoundedRectangle(cornerRadius: 36))
-                }
-                .scaleEffect(logoScale)
-                .opacity(logoOpacity)
+                // Centered App Logo
+                Image("AppLogo")
+                    .resizable()
+                    .scaledToFit()
+                    .frame(width: 180, height: 180)
+                    .clipShape(RoundedRectangle(cornerRadius: 12))
+                    .scaleEffect(logoScale)
+                    .opacity(logoOpacity)
                 
-                // Animated Title Text with glitchy flicker
+                // Animated Title Text
                 Text(displayedTitle)
                     .font(.system(size: 32, weight: .black, design: .monospaced))
-                    .foregroundColor(Color(hex: "102A43")) // Deep navy for visibility on white
+                    .foregroundColor(Color(hex: "102A43"))
                     .tracking(4)
                     .opacity(textOpacity)
-                    .offset(x: textGlitchOffset)
             }
         }
         .onAppear {
@@ -68,9 +35,6 @@ struct LaunchScreenView: View {
     @State private var logoOpacity: Double = 0.0
     @State private var textOpacity: Double = 0.0
     @State private var displayedTitle: String = "XJ9#mK Q#P7T"
-    @State private var glitchOffset: CGFloat = 0
-    @State private var textGlitchOffset: CGFloat = 0
-    @State private var glitchOpacity: Double = 0
     
     private let characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*()_+"
     
@@ -82,8 +46,6 @@ struct LaunchScreenView: View {
             textOpacity = 1.0
         }
         
-        // Start background glitch loop
-        startGlitchLoop()
         
         // 2. Decrypt "CIPHER" (Short delay for impact)
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
@@ -103,21 +65,6 @@ struct LaunchScreenView: View {
         }
     }
     
-    func startGlitchLoop() {
-        Timer.scheduledTimer(withTimeInterval: 0.1, repeats: true) { _ in
-            if Int.random(in: 0...20) > 18 {
-                glitchOffset = CGFloat.random(in: -4...4)
-                textGlitchOffset = CGFloat.random(in: -2...2)
-                glitchOpacity = 0.5
-                
-                DispatchQueue.main.asyncAfter(deadline: .now() + 0.05) {
-                    glitchOffset = 0
-                    textGlitchOffset = 0
-                    glitchOpacity = 0
-                }
-            }
-        }
-    }
     
     func scrambleAndReveal(target: String, startPos: Int, completion: @escaping () -> Void) {
         var cycleCount = 0

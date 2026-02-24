@@ -20,9 +20,21 @@ struct RiddleMenuView: View {
         RiddleLevel(id: 1, title: "MASTER DEVELOPER", description: "Recover the 4 fragments to prove your coding mastery.", icon: "hammer.circle.fill", xpRequired: 0),
         RiddleLevel(id: 2, title: "SYSTEM ARCHITECT", description: "Locked: Requires Level 10 Clearance.", icon: "building.columns.circle.fill", xpRequired: 500),
         RiddleLevel(id: 3, title: "CYBER SENTINEL", description: "Locked: Requires Level 20 Clearance.", icon: "star.circle.fill", xpRequired: 1000),
-        RiddleLevel(id: 4, title: "SECURITY MASTER", description: "Locked: Requires Level 40 Clearance.", icon: "shield.circle.fill", xpRequired: 2000),
-        RiddleLevel(id: 5, title: "GRAND MASTER", description: "Locked: Requires Level 60 Clearance.", icon: "crown.circle.fill", xpRequired: 3000)
+        RiddleLevel(id: 4, title: "SECURITY MASTER", description: "Locked: Requires Level 40 Clearance.", icon: "checkmark.shield.fill", xpRequired: 2000),
+        RiddleLevel(id: 5, title: "GRAND MASTER", description: "Locked: Requires Level 60 Clearance.", icon: "crown.fill", xpRequired: 3000)
     ]
+    
+    // Check if badge for a level has been earned
+    func hasBadge(for levelId: Int) -> Bool {
+        switch levelId {
+        case 1: return viewModel.playerStats.hasDeveloperBadge
+        case 2: return viewModel.playerStats.hasArchitectBadge
+        case 3: return viewModel.playerStats.hasSentinelBadge
+        case 4: return viewModel.playerStats.hasSecurityBadge
+        case 5: return viewModel.playerStats.hasGrandMasterBadge
+        default: return false
+        }
+    }
     
     var body: some View {
         // Navigation Logic
@@ -73,9 +85,9 @@ struct RiddleMenuView: View {
                                     }
                                 }) {
                                     HStack(spacing: 15) {
-                                        Image(systemName: level.icon)
+                                        Image(systemName: hasBadge(for: level.id) ? level.icon : (viewModel.playerStats.experience >= level.xpRequired ? "circle.dashed" : "lock.fill"))
                                             .font(.title2)
-                                            .foregroundColor(viewModel.playerStats.experience >= level.xpRequired ? .cryptoGreen : .gray)
+                                            .foregroundColor(hasBadge(for: level.id) ? .cryptoGreen : .gray)
                                         
                                         VStack(alignment: .leading, spacing: 4) {
                                             Text(level.title)

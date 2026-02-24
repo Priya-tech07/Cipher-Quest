@@ -225,16 +225,16 @@ struct ProfileView: View {
                             .id("coins_section")
 
                         
+                        StatCard(title: "XP", value: "\(viewModel.playerStats.experience)", icon: "bolt.fill", color: .orange)
+                            .walkthroughHighlight(id: "profile_xp_stat", enabled: viewModel.isOnboarding)
+                            .id("xp_stat_section")
+
+                        
                         Button(action: { isShowingStats = true }) {
                             StatCard(title: "STATS", value: "VIEW", icon: "chart.bar.xaxis", color: .cryptoBlue)
                         }
                         .walkthroughHighlight(id: "profile_level", enabled: viewModel.isOnboarding)
                         .id("level_section")
-
-                        
-                        StatCard(title: "XP", value: "\(viewModel.playerStats.experience)", icon: "bolt.fill", color: .orange)
-                            .walkthroughHighlight(id: "profile_xp_stat", enabled: viewModel.isOnboarding)
-                            .id("xp_stat_section")
 
                         
                         Button(action: { viewModel.isShowingRiddleView = true }) {
