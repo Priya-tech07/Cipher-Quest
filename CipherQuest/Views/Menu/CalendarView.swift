@@ -309,7 +309,7 @@ struct DayCell: View {
         }) {
             VStack {
                 Text("\(calendar.component(.day, from: date))")
-                    .font(.system(size: isIPad ? 24 : 16, weight: .bold))
+                     .font(.system(size: isIPad ? 24 : 16, weight: .bold))
                     .foregroundColor(textColor)
             }
             .frame(width: size, height: size)
