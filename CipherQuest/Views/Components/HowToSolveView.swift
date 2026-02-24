@@ -56,6 +56,7 @@ struct HowToSolveView: View {
                         
 
                     }
+                    .padding(.horizontal)
                 }
             }
 
