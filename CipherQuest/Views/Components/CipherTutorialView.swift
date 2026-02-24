@@ -27,7 +27,7 @@ struct CipherTutorialView: View {
                 TutorialStep(title: "The Keyword", description: "Choose a secret word (e.g., KEY).", visual: .vigenereKeyword),
                 TutorialStep(title: "Align & Repeat", description: "Write the keyword under your message.", visual: .vigenereAlign),
                 TutorialStep(title: "Add Values", description: "Add the letter values (A=0, B=1...).", visual: .vigenereAdd),
-                TutorialStep(title: "Modulo 26", description: "Wrap around if the sum > 25.", visual: .vigenereMod)
+                TutorialStep(title: "Modulo 26", description: "If the sum is 26 or more, use modulo 26 to wrap around back to the start. This keeps the result within the alphabet range (0-25).", visual: .vigenereMod)
             ]
         }
     }
