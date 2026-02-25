@@ -262,36 +262,71 @@ class GameViewModel: ObservableObject {
         gameState = .success
     }
     
-    /// Scans player stats and awards badges based on milestones
+    /// Scans player stats and awards badges based on specific riddle set completions
     func checkAchievements() {
         var statsChanged = false
+        let completed = Set(playerStats.completedRiddles)
         
-        // 1. Developer Badge: Awarded for first riddle completion
-        if !playerStats.hasDeveloperBadge && playerStats.completedRiddles.count > 0 {
+        // 1. Developer Badge: Riddles 10001-10004
+        let devSet: Set<Int> = [10001, 10002, 10003, 10004]
+        if !playerStats.hasDeveloperBadge && devSet.isSubset(of: completed) {
             playerStats.hasDeveloperBadge = true
             statsChanged = true
         }
         
-        // 2. XP Milestones
-        let xp = playerStats.experience
-        
-        if xp >= 500 && !playerStats.hasArchitectBadge {
+        // 2. System Architect: Riddles 10005-10008
+        let archSet: Set<Int> = [10005, 10006, 10007, 10008]
+        if !playerStats.hasArchitectBadge && archSet.isSubset(of: completed) {
             playerStats.hasArchitectBadge = true
             statsChanged = true
         }
         
-        if xp >= 1000 && !playerStats.hasSentinelBadge {
+        // 3. Cyber Sentinel: Riddles 10009-10012
+        let sentinelSet: Set<Int> = [10009, 10010, 10011, 10012]
+        if !playerStats.hasSentinelBadge && sentinelSet.isSubset(of: completed) {
             playerStats.hasSentinelBadge = true
             statsChanged = true
         }
         
-        if xp >= 2000 && !playerStats.hasSecurityBadge {
+        // 4. Security Master: Riddles 10013-10016
+        let securitySet: Set<Int> = [10013, 10014, 10015, 10016]
+        if !playerStats.hasSecurityBadge && securitySet.isSubset(of: completed) {
             playerStats.hasSecurityBadge = true
             statsChanged = true
         }
         
-        if xp >= 3000 && !playerStats.hasGrandMasterBadge {
+        // 5. Grand Master: Riddles 10017-10020
+        let grandMasterSet: Set<Int> = [10017, 10018, 10019, 10020]
+        if !playerStats.hasGrandMasterBadge && grandMasterSet.isSubset(of: completed) {
             playerStats.hasGrandMasterBadge = true
+            statsChanged = true
+        }
+        
+        // 6. Cricket Champion: Riddles 10021-10024
+        let cricketSet: Set<Int> = [10021, 10022, 10023, 10024]
+        if !playerStats.hasCricketBadge && cricketSet.isSubset(of: completed) {
+            playerStats.hasCricketBadge = true
+            statsChanged = true
+        }
+        
+        // 7. Cinema Buff: Riddles 10025-10028
+        let cinemaSet: Set<Int> = [10025, 10026, 10027, 10028]
+        if !playerStats.hasCinemaBadge && cinemaSet.isSubset(of: completed) {
+            playerStats.hasCinemaBadge = true
+            statsChanged = true
+        }
+        
+        // 8. History Scholar: Riddles 10029-10032
+        let historySet: Set<Int> = [10029, 10030, 10031, 10032]
+        if !playerStats.hasHistoryBadge && historySet.isSubset(of: completed) {
+            playerStats.hasHistoryBadge = true
+            statsChanged = true
+        }
+        
+        // 9. Geography Explorer: Riddles 10033-10036
+        let geoSet: Set<Int> = [10033, 10034, 10035, 10036]
+        if !playerStats.hasGeographyBadge && geoSet.isSubset(of: completed) {
+            playerStats.hasGeographyBadge = true
             statsChanged = true
         }
         

@@ -14,12 +14,16 @@ struct PlayerStats: Codable {
     var hasSentinelBadge: Bool = false
     var hasSecurityBadge: Bool = false
     var hasGrandMasterBadge: Bool = false
+    var hasCricketBadge: Bool = false
+    var hasCinemaBadge: Bool = false
+    var hasHistoryBadge: Bool = false
+    var hasGeographyBadge: Bool = false
 
     
     var dailyActivity: [String: Int] = [:] // Format: "yyyy-MM-dd" : count
     
     enum CodingKeys: String, CodingKey {
-        case agentName, coins, levelsCompleted, hintsUsed, currentLevelIndex, experience, completedRiddles, hasDeveloperBadge, hasArchitectBadge, hasSentinelBadge, hasSecurityBadge, hasGrandMasterBadge, dailyActivity
+        case agentName, coins, levelsCompleted, hintsUsed, currentLevelIndex, experience, completedRiddles, hasDeveloperBadge, hasArchitectBadge, hasSentinelBadge, hasSecurityBadge, hasGrandMasterBadge, hasCricketBadge, hasCinemaBadge, hasHistoryBadge, hasGeographyBadge, dailyActivity
     }
     
     init() {}
@@ -38,6 +42,10 @@ struct PlayerStats: Codable {
         hasSentinelBadge = try container.decodeIfPresent(Bool.self, forKey: .hasSentinelBadge) ?? false
         hasSecurityBadge = try container.decodeIfPresent(Bool.self, forKey: .hasSecurityBadge) ?? false
         hasGrandMasterBadge = try container.decodeIfPresent(Bool.self, forKey: .hasGrandMasterBadge) ?? false
+        hasCricketBadge = try container.decodeIfPresent(Bool.self, forKey: .hasCricketBadge) ?? false
+        hasCinemaBadge = try container.decodeIfPresent(Bool.self, forKey: .hasCinemaBadge) ?? false
+        hasHistoryBadge = try container.decodeIfPresent(Bool.self, forKey: .hasHistoryBadge) ?? false
+        hasGeographyBadge = try container.decodeIfPresent(Bool.self, forKey: .hasGeographyBadge) ?? false
         dailyActivity = try container.decodeIfPresent([String: Int].self, forKey: .dailyActivity) ?? [:]
     }
     

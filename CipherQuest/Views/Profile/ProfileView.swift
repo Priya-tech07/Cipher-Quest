@@ -229,19 +229,20 @@ struct ProfileView: View {
                             .walkthroughHighlight(id: "profile_xp_stat", enabled: viewModel.isOnboarding)
                             .id("xp_stat_section")
 
-                        
-                        Button(action: { isShowingStats = true }) {
-                            StatCard(title: "STATS", value: "VIEW", icon: "chart.bar.xaxis", color: .cryptoBlue)
-                        }
-                        .walkthroughHighlight(id: "profile_level", enabled: viewModel.isOnboarding)
-                        .id("level_section")
+
 
                         
                         Button(action: { viewModel.isShowingRiddleView = true }) {
-                            StatCard(title: "RIDDLES", value: "\(viewModel.playerStats.completedRiddles.count)", icon: "brain.head.profile", color: .cryptoPurple)
+                            StatCard(title: "RIDDLES", value: "\(viewModel.playerStats.completedRiddles.filter { $0 >= 10000 }.count)", icon: "brain.head.profile", color: .cryptoPurple)
                         }
                         .walkthroughHighlight(id: "profile_riddles", enabled: viewModel.isOnboarding)
                         .id("riddles_section")
+
+                        
+                        Button(action: { isShowingStats = true }) {
+                            StatCard(title: "STATS", value: "VIEW", icon: "chart.bar.xaxis", color: .cryptoGreen)
+                        }
+                        .id("stats_card_section")
 
                     }
                     .padding(.horizontal)
@@ -288,6 +289,30 @@ struct ProfileView: View {
                                 
                                 if viewModel.playerStats.hasGrandMasterBadge {
                                     GrandMasterBadgeView()
+                                         .scaleEffect(0.35)
+                                         .frame(width: 60, height: 60)
+                                }
+                                
+                                if viewModel.playerStats.hasCricketBadge {
+                                    CricketBadgeView()
+                                        .scaleEffect(0.35)
+                                        .frame(width: 60, height: 60)
+                                }
+                                
+                                if viewModel.playerStats.hasCinemaBadge {
+                                    CinemaBadgeView()
+                                        .scaleEffect(0.35)
+                                        .frame(width: 60, height: 60)
+                                }
+                                
+                                if viewModel.playerStats.hasHistoryBadge {
+                                    HistoryBadgeView()
+                                        .scaleEffect(0.35)
+                                        .frame(width: 60, height: 60)
+                                }
+                                
+                                if viewModel.playerStats.hasGeographyBadge {
+                                    GeographyBadgeView()
                                         .scaleEffect(0.35)
                                         .frame(width: 60, height: 60)
                                 }
@@ -298,7 +323,11 @@ struct ProfileView: View {
                                !viewModel.playerStats.hasArchitectBadge &&
                                !viewModel.playerStats.hasSentinelBadge &&
                                !viewModel.playerStats.hasSecurityBadge &&
-                               !viewModel.playerStats.hasGrandMasterBadge {
+                               !viewModel.playerStats.hasGrandMasterBadge &&
+                               !viewModel.playerStats.hasCricketBadge &&
+                               !viewModel.playerStats.hasCinemaBadge &&
+                               !viewModel.playerStats.hasHistoryBadge &&
+                               !viewModel.playerStats.hasGeographyBadge {
                                 Text("Complete riddles to earn badges.")
                                     .font(.system(size: 12, design: .monospaced))
                                     .foregroundColor(.cryptoSubtext)

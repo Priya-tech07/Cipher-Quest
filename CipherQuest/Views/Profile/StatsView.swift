@@ -10,6 +10,14 @@ struct StatsView: View {
         viewModel.playerStats.completedRiddles.count
     }
     
+    private var riddlesSolved: Int {
+        viewModel.playerStats.completedRiddles.filter { $0 >= 10000 }.count
+    }
+    
+    private var missionsSolved: Int {
+        viewModel.playerStats.completedRiddles.filter { $0 < 10000 }.count
+    }
+    
     // Helper to calculate stats
     private func calculateStats() -> (easy: Int, hard: Int, expert: Int) {
         var easy = 0
@@ -17,7 +25,17 @@ struct StatsView: View {
         var expert = 0
         
         for id in viewModel.playerStats.completedRiddles {
-            let difficulty = min((id / 5) + 1, 5)
+            let difficulty: Int
+            if id >= 20000 {
+                difficulty = 5 
+            } else if id >= 10000 {
+                // Secure Riddles (10001-10020)
+                let level = (id - 10001) / 4 + 1
+                difficulty = min(max(level, 1), 5)
+            } else {
+                // Story Missions (0-22)
+                difficulty = min((id / 5) + 1, 5)
+            }
             
             switch difficulty {
             case 1, 2:

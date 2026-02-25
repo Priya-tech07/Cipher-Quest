@@ -1,12 +1,13 @@
 import SwiftUI
 
 struct LaunchScreenView: View {
+    @ObservedObject var themeManager = ThemeManager.shared
     @Binding var showLaunchScreen: Bool
     
     var body: some View {
         ZStack {
-            // Solid white background
-            Color.white.edgesIgnoringSafeArea(.all)
+            // Respect the theme background
+            Color.cryptoDarkBlue.edgesIgnoringSafeArea(.all)
             
             VStack(spacing: 40) {
                 // Centered App Logo
@@ -21,7 +22,7 @@ struct LaunchScreenView: View {
                 // Animated Title Text
                 Text(displayedTitle)
                     .font(.system(size: 32, weight: .black, design: .monospaced))
-                    .foregroundColor(Color(hex: "102A43"))
+                    .foregroundColor(.cryptoText)
                     .tracking(4)
                     .opacity(textOpacity)
             }

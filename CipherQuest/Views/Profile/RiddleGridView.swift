@@ -26,39 +26,67 @@ struct RiddleGridView: View {
     var riddles: [Riddle] {
         if level == 2 {
             return [
-                Riddle(id: 5, question: "I am a network of servers that stores data remotely. What am I?", answer: "CLOUD", xpRequired: 500, label: "NETWORK"),
-                Riddle(id: 6, question: "I am the interface that allows applications to talk to each other. What am I?", answer: "API", xpRequired: 550, label: "CONNECT"),
-                Riddle(id: 7, question: "I am the tool that tracks changes in your source code. What am I?", answer: "GIT", xpRequired: 600, label: "VERSION"),
-                Riddle(id: 8, question: "I scramble data so only authorized parties can understand it. What am I?", answer: "ENCRYPTION", xpRequired: 650, label: "SECURITY")
+                Riddle(id: 10005, question: "I am a network of servers that stores data remotely. What am I?", answer: "CLOUD", xpRequired: 500, label: "NETWORK"),
+                Riddle(id: 10006, question: "I am the interface that allows applications to talk to each other. What am I?", answer: "API", xpRequired: 550, label: "CONNECT"),
+                Riddle(id: 10007, question: "I am the tool that tracks changes in your source code. What am I?", answer: "GIT", xpRequired: 600, label: "VERSION"),
+                Riddle(id: 10008, question: "I scramble data so only authorized parties can understand it. What am I?", answer: "ENCRYPTION", xpRequired: 650, label: "SECURITY")
             ]
         } else if level == 3 {
             return [
-                Riddle(id: 9, question: "I am the protocol that ensures secure data transfer over the web. What am I?", answer: "HTTPS", xpRequired: 1000, label: "PROTOCOL"),
-                Riddle(id: 10, question: "I am a unique string that identifies a specific device on a network. What am I?", answer: "IP", xpRequired: 1100, label: "ADDRESS"),
-                Riddle(id: 11, question: "I am the process of converting human-readable code into machine code. What am I?", answer: "COMPILATION", xpRequired: 1200, label: "SYSTEM"),
-                Riddle(id: 12, question: "I am a malicious program that replicates itself to spread to other computers. What am I?", answer: "WORM", xpRequired: 1300, label: "THREAT")
+                Riddle(id: 10009, question: "I am the protocol that ensures secure data transfer over the web. What am I?", answer: "HTTPS", xpRequired: 1000, label: "PROTOCOL"),
+                Riddle(id: 10010, question: "I am a unique string that identifies a specific device on a network. What am I?", answer: "IP", xpRequired: 1100, label: "ADDRESS"),
+                Riddle(id: 10011, question: "I am the process of converting human-readable code into machine code. What am I?", answer: "COMPILATION", xpRequired: 1200, label: "SYSTEM"),
+                Riddle(id: 10012, question: "I am a malicious program that replicates itself to spread to other computers. What am I?", answer: "WORM", xpRequired: 1300, label: "THREAT")
             ]
         } else if level == 4 {
             return [
-                Riddle(id: 13, question: "I am a cryptographic hash function used to verify data integrity. What am I?", answer: "SHA", xpRequired: 2000, label: "HASH"),
-                Riddle(id: 14, question: "I am a piece of code that provides a way to interact with a hardware device. What am I?", answer: "DRIVER", xpRequired: 2100, label: "HARDWARE"),
-                Riddle(id: 15, question: "I am the principle of giving users only the access they need for their job. What am I?", answer: "LEAST PRIVILEGE", xpRequired: 2200, label: "POLICY"),
-                Riddle(id: 16, question: "I am a decentralized ledger that records transactions across many computers. What am I?", answer: "BLOCKCHAIN", xpRequired: 2300, label: "LEDGER")
+                Riddle(id: 10013, question: "I am a cryptographic hash function used to verify data integrity. What am I?", answer: "SHA", xpRequired: 2000, label: "HASH"),
+                Riddle(id: 10014, question: "I am a piece of code that provides a way to interact with a hardware device. What am I?", answer: "DRIVER", xpRequired: 2100, label: "HARDWARE"),
+                Riddle(id: 10015, question: "I am the principle of giving users only the access they need for their job. What am I?", answer: "LEAST PRIVILEGE", xpRequired: 2200, label: "POLICY"),
+                Riddle(id: 10016, question: "I am a decentralized ledger that records transactions across many computers. What am I?", answer: "BLOCKCHAIN", xpRequired: 2300, label: "LEDGER")
             ]
         } else if level == 5 {
             return [
-                Riddle(id: 17, question: "I am the foundational model that describes how network protocols interact. What am I?", answer: "OSI", xpRequired: 3000, label: "ARCHITECTURE"),
-                Riddle(id: 18, question: "I am a system designed to detect and block unauthorized access to a network. What am I?", answer: "IPS", xpRequired: 3200, label: "DEFENSE"),
-                Riddle(id: 19, question: "I am the mathematical foundation of modern computer science and logic. What am I?", answer: "BOOLEAN", xpRequired: 3400, label: "LOGIC"),
-                Riddle(id: 20, question: "I am the elusive goal of building systems that learn and adapt on their own. What am I?", answer: "AGI", xpRequired: 3600, label: "FUTURE")
+                Riddle(id: 10017, question: "I am the foundational model that describes how network protocols interact. What am I?", answer: "OSI", xpRequired: 3000, label: "ARCHITECTURE"),
+                Riddle(id: 10018, question: "I am a system designed to detect and block unauthorized access to a network. What am I?", answer: "IPS", xpRequired: 3200, label: "DEFENSE"),
+                Riddle(id: 10019, question: "I am the mathematical foundation of modern computer science and logic. What am I?", answer: "BOOLEAN", xpRequired: 3400, label: "LOGIC"),
+                Riddle(id: 10020, question: "I am the elusive goal of building systems that learn and adapt on their own. What am I?", answer: "AGI", xpRequired: 3600, label: "FUTURE")
+            ]
+        } else if level == 6 {
+            return [
+                Riddle(id: 10021, question: "I am the piece of equipment used by the batsman to hit the ball. What am I?", answer: "BAT", xpRequired: 4000, label: "EQUIPMENT"),
+                Riddle(id: 10022, question: "I am the three wooden posts that the bowler tries to hit. What am I?", answer: "WICKET", xpRequired: 4100, label: "TARGET"),
+                Riddle(id: 10023, question: "I am the official who makes decisions on the field. What am I?", answer: "UMPIRE", xpRequired: 4200, label: "OFFICIAL"),
+                Riddle(id: 10024, question: "I am a delivery that bounces twice or more before reaching the batsman. What am I?", answer: "DEAD BALL", xpRequired: 4300, label: "DELIVERY")
+            ]
+        } else if level == 7 {
+            return [
+                Riddle(id: 10025, question: "I am the person who oversees the entire filmmaking process. What am I?", answer: "DIRECTOR", xpRequired: 5000, label: "LEADERSHIP"),
+                Riddle(id: 10026, question: "I am the award given annually for excellence in cinematic achievements. What am I?", answer: "OSCAR", xpRequired: 5100, label: "AWARD"),
+                Riddle(id: 10027, question: "I am the written text of a movie, including dialogue and actions. What am I?", answer: "SCRIPT", xpRequired: 5200, label: "WRITING"),
+                Riddle(id: 10028, question: "I am a short preview of an upcoming movie. What am I?", answer: "TRAILER", xpRequired: 5300, label: "PREVIEW")
+            ]
+        } else if level == 8 {
+            return [
+                Riddle(id: 10029, question: "I am the ancient civilization known for building the Great Pyramids. Who am I?", answer: "EGYPT", xpRequired: 6000, label: "CIVILIZATION"),
+                Riddle(id: 10030, question: "I am the document signed in 1215 that limited the power of the English king. What am I?", answer: "MAGNA CARTA", xpRequired: 6100, label: "DOCUMENT"),
+                Riddle(id: 10031, question: "I am the leader of the Mongol Empire who conquered vast territories in Asia. Who am I?", answer: "GENGHIS KHAN", xpRequired: 6200, label: "LEADER"),
+                Riddle(id: 10032, question: "I am the historical period between the fall of Rome and the Renaissance. What am I?", answer: "MIDDLE AGES", xpRequired: 6300, label: "PERIOD")
+            ]
+        } else if level == 9 {
+            return [
+                Riddle(id: 10033, question: "I am the largest continent on Earth by both land area and population. What am I?", answer: "ASIA", xpRequired: 7000, label: "CONTINENT"),
+                Riddle(id: 10034, question: "I am the longest river in the world, flowing through northeastern Africa. What am I?", answer: "NILE", xpRequired: 7100, label: "RIVER"),
+                Riddle(id: 10035, question: "I am the imaginary line that divides the Earth into Northern and Southern Hemispheres. What am I?", answer: "EQUATOR", xpRequired: 7200, label: "LINE"),
+                Riddle(id: 10036, question: "I am the highest mountain in the world above sea level. What am I?", answer: "EVEREST", xpRequired: 7300, label: "MOUNTAIN")
             ]
         } else {
             // Level 1 Default
             return [
-                Riddle(id: 1, question: "I am the language that styles the web universe. What am I?", answer: "CSS", xpRequired: 0, label: "WEB"),
-                Riddle(id: 2, question: "I am a data structure where the last item in is the first one out. What am I?", answer: "STACK", xpRequired: 50, label: "LOGIC"),
-                Riddle(id: 3, question: "I am the integrated environment where you spend most of your coding hours. What am I?", answer: "IDE", xpRequired: 100, label: "TOOLS"),
-                Riddle(id: 4, question: "I am the heart of the operating system, managing everything. What am I?", answer: "KERNEL", xpRequired: 150, label: "SYSTEM")
+                Riddle(id: 10001, question: "I am the language that styles the web universe. What am I?", answer: "CSS", xpRequired: 0, label: "WEB"),
+                Riddle(id: 10002, question: "I am a data structure where the last item in is the first one out. What am I?", answer: "STACK", xpRequired: 50, label: "LOGIC"),
+                Riddle(id: 10003, question: "I am the integrated environment where you spend most of your coding hours. What am I?", answer: "IDE", xpRequired: 100, label: "TOOLS"),
+                Riddle(id: 10004, question: "I am the heart of the operating system, managing everything. What am I?", answer: "KERNEL", xpRequired: 150, label: "SYSTEM")
             ]
         }
     }
@@ -109,8 +137,24 @@ struct RiddleGridView: View {
                         SecurityMasterBadgeView()
                             .scaleEffect(1.5)
                             .frame(width: 300, height: 300)
-                    } else {
+                    } else if level == 5 {
                         GrandMasterBadgeView()
+                            .scaleEffect(1.5)
+                            .frame(width: 300, height: 300)
+                    } else if level == 6 {
+                        CricketBadgeView()
+                            .scaleEffect(1.5)
+                            .frame(width: 300, height: 300)
+                    } else if level == 7 {
+                        CinemaBadgeView()
+                            .scaleEffect(1.5)
+                            .frame(width: 300, height: 300)
+                    } else if level == 8 {
+                        HistoryBadgeView()
+                            .scaleEffect(1.5)
+                            .frame(width: 300, height: 300)
+                    } else if level == 9 {
+                        GeographyBadgeView()
                             .scaleEffect(1.5)
                             .frame(width: 300, height: 300)
                     }
@@ -158,7 +202,7 @@ struct RiddleGridView: View {
                 
                 Spacer()
                 
-                if (level == 1 && viewModel.playerStats.hasDeveloperBadge) || (level == 2 && viewModel.playerStats.hasArchitectBadge) || (level == 3 && viewModel.playerStats.hasSentinelBadge) || (level == 4 && viewModel.playerStats.hasSecurityBadge) || (level == 5 && viewModel.playerStats.hasGrandMasterBadge) {
+                if (level == 1 && viewModel.playerStats.hasDeveloperBadge) || (level == 2 && viewModel.playerStats.hasArchitectBadge) || (level == 3 && viewModel.playerStats.hasSentinelBadge) || (level == 4 && viewModel.playerStats.hasSecurityBadge) || (level == 5 && viewModel.playerStats.hasGrandMasterBadge) || (level == 6 && viewModel.playerStats.hasCricketBadge) || (level == 7 && viewModel.playerStats.hasCinemaBadge) || (level == 8 && viewModel.playerStats.hasHistoryBadge) || (level == 9 && viewModel.playerStats.hasGeographyBadge) {
                     let badgeName: String = {
                         switch level {
                         case 1: return "MASTER DEVELOPER"
@@ -166,6 +210,10 @@ struct RiddleGridView: View {
                         case 3: return "CYBER SENTINEL"
                         case 4: return "SECURITY MASTER"
                         case 5: return "GRAND MASTER"
+                        case 6: return "CRICKET CHAMPION"
+                        case 7: return "CINEMA BUFF"
+                        case 8: return "HISTORY SCHOLAR"
+                        case 9: return "GEOGRAPHY EXPLORER"
                         default: return ""
                         }
                     }()
@@ -249,6 +297,22 @@ struct RiddleGridView: View {
                         } else if level == 5 && !viewModel.playerStats.hasGrandMasterBadge {
                             viewModel.playerStats.hasGrandMasterBadge = true
                             viewModel.playerStats.experience += 500
+                            DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) { showBadgeAward = true }
+                        } else if level == 6 && !viewModel.playerStats.hasCricketBadge {
+                            viewModel.playerStats.hasCricketBadge = true
+                            viewModel.playerStats.experience += 600
+                            DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) { showBadgeAward = true }
+                        } else if level == 7 && !viewModel.playerStats.hasCinemaBadge {
+                            viewModel.playerStats.hasCinemaBadge = true
+                            viewModel.playerStats.experience += 700
+                            DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) { showBadgeAward = true }
+                        } else if level == 8 && !viewModel.playerStats.hasHistoryBadge {
+                            viewModel.playerStats.hasHistoryBadge = true
+                            viewModel.playerStats.experience += 800
+                            DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) { showBadgeAward = true }
+                        } else if level == 9 && !viewModel.playerStats.hasGeographyBadge {
+                            viewModel.playerStats.hasGeographyBadge = true
+                            viewModel.playerStats.experience += 900
                             DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) { showBadgeAward = true }
                         }
                     }
@@ -470,6 +534,14 @@ private var badgeAwardOverlay: some View {
                 SecurityMasterBadgeView()
             } else if level == 5 {
                 GrandMasterBadgeView()
+            } else if level == 6 {
+                CricketBadgeView()
+            } else if level == 7 {
+                CinemaBadgeView()
+            } else if level == 8 {
+                HistoryBadgeView()
+            } else if level == 9 {
+                GeographyBadgeView()
             }
             
             VStack(spacing: 12) {

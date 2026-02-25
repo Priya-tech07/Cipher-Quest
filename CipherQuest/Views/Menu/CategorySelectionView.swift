@@ -42,19 +42,23 @@ struct CategorySelectionView: View {
                             Button(action: {
                                 viewModel.startGame(mode: viewModel.currentGameMode, preferredType: viewModel.pendingPracticeType, category: category)
                             }) {
-                                HStack(spacing: 20) {
-                                    Image(systemName: category.icon)
-                                        .font(.system(size: 40))
-                                        .foregroundColor(category.color)
-                                        .frame(width: 60)
+                                HStack(spacing: 15) {
+                                    ZStack {
+                                        Circle()
+                                            .fill(category.color.opacity(0.2))
+                                            .frame(width: 50, height: 50)
+                                        Image(systemName: category.icon)
+                                            .font(.title2)
+                                            .foregroundColor(category.color)
+                                    }
                                     
-                                    VStack(alignment: .leading, spacing: 5) {
+                                    VStack(alignment: .leading, spacing: 2) {
                                         Text(category.displayName)
-                                            .font(.system(size: 20, weight: .bold, design: .monospaced))
+                                            .font(.system(size: 16, weight: .bold, design: .monospaced))
                                             .foregroundColor(.cryptoText)
                                         
                                         Text(category.description)
-                                            .font(.system(size: 12, design: .monospaced))
+                                            .font(.system(size: 10, design: .monospaced))
                                             .foregroundColor(.cryptoSubtext)
                                             .multilineTextAlignment(.leading)
                                     }
@@ -62,11 +66,12 @@ struct CategorySelectionView: View {
                                     Spacer()
                                     
                                     Image(systemName: "chevron.right")
-                                        .foregroundColor(.cryptoSubtext)
+                                        .foregroundColor(.gray)
                                 }
-                                .padding(20)
-                                .background(Color.cryptoSurface.opacity(0.5))
+                                .padding()
+                                .background(Color.cryptoLightNavy)
                                 .cornerRadius(15)
+                                .shadow(color: Color.black.opacity(0.05), radius: 5, x: 0, y: 2)
                                 .overlay(
                                     RoundedRectangle(cornerRadius: 15)
                                         .stroke(category.color.opacity(0.3), lineWidth: 1)

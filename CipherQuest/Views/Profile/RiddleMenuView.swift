@@ -21,7 +21,11 @@ struct RiddleMenuView: View {
         RiddleLevel(id: 2, title: "SYSTEM ARCHITECT", description: "Locked: Requires Level 10 Clearance.", icon: "building.columns.circle.fill", xpRequired: 500),
         RiddleLevel(id: 3, title: "CYBER SENTINEL", description: "Locked: Requires Level 20 Clearance.", icon: "star.circle.fill", xpRequired: 1000),
         RiddleLevel(id: 4, title: "SECURITY MASTER", description: "Locked: Requires Level 40 Clearance.", icon: "checkmark.shield.fill", xpRequired: 2000),
-        RiddleLevel(id: 5, title: "GRAND MASTER", description: "Locked: Requires Level 60 Clearance.", icon: "crown.fill", xpRequired: 3000)
+        RiddleLevel(id: 5, title: "GRAND MASTER", description: "Locked: Requires Level 60 Clearance.", icon: "crown.fill", xpRequired: 3000),
+        RiddleLevel(id: 6, title: "CRICKET CHAMPION", description: "Prove your knowledge of the pitch and the boundary.", icon: "sportscourt.fill", xpRequired: 4000),
+        RiddleLevel(id: 7, title: "CINEMA BUFF", description: "Test your expertise in the world of film and story.", icon: "film.fill", xpRequired: 5000),
+        RiddleLevel(id: 8, title: "HISTORY SCHOLAR", description: "Uncover the secrets of the past and civilizations.", icon: "scroll.fill", xpRequired: 6000),
+        RiddleLevel(id: 9, title: "GEOGRAPHY EXPLORER", description: "Chart the maps and landscapes of the globe.", icon: "globe.americas.fill", xpRequired: 7000)
     ]
     
     // Check if badge for a level has been earned
@@ -32,6 +36,10 @@ struct RiddleMenuView: View {
         case 3: return viewModel.playerStats.hasSentinelBadge
         case 4: return viewModel.playerStats.hasSecurityBadge
         case 5: return viewModel.playerStats.hasGrandMasterBadge
+        case 6: return viewModel.playerStats.hasCricketBadge
+        case 7: return viewModel.playerStats.hasCinemaBadge
+        case 8: return viewModel.playerStats.hasHistoryBadge
+        case 9: return viewModel.playerStats.hasGeographyBadge
         default: return false
         }
     }
@@ -40,7 +48,7 @@ struct RiddleMenuView: View {
         // Navigation Logic
         if let level = selectedLevel {
             // Currently only Level 1 points to the existing Grid View
-            if level.id >= 1 && level.id <= 5 {
+            if level.id >= 1 && level.id <= 9 {
                 RiddleGridView(viewModel: viewModel, level: level.id, onDismiss: { 
                     withAnimation { selectedLevel = nil }
                 })
