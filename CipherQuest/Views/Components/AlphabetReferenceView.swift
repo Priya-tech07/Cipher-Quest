@@ -15,6 +15,22 @@ struct AlphabetReferenceView: View {
     
     @State private var dragOffset = CGSize.zero
     
+    private var headerTitle: String {
+        switch cipherType {
+        case .atbash: return "ATBASH INDEX"
+        case .vigenere: return "VIGENÈRE INDEX"
+        default: return "ALPHABET INDEX"
+        }
+    }
+    
+    private var intelTitle: String {
+        switch cipherType {
+        case .atbash: return "MISSION INTEL: ATBASH REFLECTION MAP"
+        case .vigenere: return "MISSION INTEL: ZERO-BASED INDEX MAP"
+        default: return "MISSION INTEL: DUAL INDEX (1-26 & 26-1) MAP"
+        }
+    }
+    
     var body: some View {
         VStack(spacing: 0) {
             // Drag Handle
@@ -25,7 +41,7 @@ struct AlphabetReferenceView: View {
             
             // Header
             HStack {
-                Text(cipherType == .atbash ? "ATBASH INDEX" : (cipherType == .vigenere ? "VIGENÈRE INDEX" : "ALPHABET INDEX"))
+                Text(headerTitle)
                     .font(.system(size: 18, weight: .black, design: .monospaced))
                     .foregroundColor(.cryptoText)
                 
@@ -42,62 +58,19 @@ struct AlphabetReferenceView: View {
             ScrollView {
                 LazyVGrid(columns: columns, spacing: 12) {
                     ForEach(0..<alphabet.count, id: \.self) { index in
-                        VStack(spacing: 4) {
-                            Text(String(alphabet[index]))
-                                .font(.system(size: 22, weight: .bold, design: .monospaced))
-                                .foregroundColor(.cryptoGreen)
-                            
-                            if cipherType == .atbash {
-                                // Atbash: Show Reverse Mapping (A -> Z)
-                                VStack(spacing: 2) {
-                                    Text(String(alphabet[25 - index]))
-                                        .font(.system(size: 22, weight: .bold, design: .monospaced))
-                                        .foregroundColor(.cryptoPurple)
-                                }
-                                .padding(.horizontal, 6)
-                                .padding(.vertical, 4)
-                                .background(Color.cryptoPurple.opacity(0.1))
-                                .cornerRadius(4)
-                            } else if cipherType == .vigenere {
-                                // Vigenère: Show 0-based Index (0-25)
-                                HStack(spacing: 6) {
-                                    Text(String(format: "%02d", index))
-                                        .font(.system(size: 13, weight: .bold, design: .monospaced))
-                                        .foregroundColor(.cryptoPurple)
-                                }
-                                .padding(.horizontal, 6)
-                                .padding(.vertical, 2)
-                                .background(Color.cryptoPurple.opacity(0.1))
-                                .cornerRadius(4)
-                            } else {
-                                // Standard: Show Indices
-                                HStack(spacing: 6) {
-                                    Text(String(format: "%02d", index + 1))
-                                        .font(.system(size: 13, weight: .bold, design: .monospaced))
-                                        .foregroundColor(.cryptoPurple)
-                                    
-                                    Text(String(format: "%02d", 26 - index))
-                                        .font(.system(size: 11, weight: .medium, design: .monospaced))
-                                        .foregroundColor(.cryptoSubtext.opacity(0.6))
-                                }
-                                .padding(.horizontal, 6)
-                                .padding(.vertical, 2)
-                                .background(Color.cryptoPurple.opacity(0.1))
-                                .cornerRadius(4)
-                            }
-                        }
-                        .frame(maxWidth: .infinity)
-                        .padding(.vertical, 12)
-                        .background(Color.white.opacity(0.9))
-                        .cornerRadius(12)
-                        .shadow(color: Color.black.opacity(0.03), radius: 3, x: 0, y: 1)
+                        AlphabetCard(
+                            index: index,
+                            letter: alphabet[index],
+                            cipherType: cipherType,
+                            alphabet: alphabet
+                        )
                     }
                 }
                 .padding(.horizontal)
                 .padding(.bottom, 20)
             }
             
-            Text(cipherType == .atbash ? "MISSION INTEL: ATBASH REFLECTION MAP" : (cipherType == .vigenere ? "MISSION INTEL: ZERO-BASED INDEX MAP" : "MISSION INTEL: DUAL INDEX (1-26 & 26-1) MAP"))
+            Text(intelTitle)
                 .font(.system(size: 10, weight: .bold, design: .monospaced))
                 .foregroundColor(.cryptoSubtext)
                 .padding(.bottom, 30)
@@ -126,5 +99,64 @@ struct AlphabetReferenceView: View {
                     }
                 }
         )
+    }
+}
+
+private struct AlphabetCard: View {
+    let index: Int
+    let letter: Character
+    let cipherType: CipherType?
+    let alphabet: [Character]
+    
+    var body: some View {
+        VStack(spacing: 4) {
+            Text(String(letter))
+                .font(.system(size: 22, weight: .bold, design: .monospaced))
+                .foregroundColor(.cryptoGreen)
+            
+            if cipherType == .atbash {
+                // Atbash: Show Reverse Mapping (A -> Z)
+                VStack(spacing: 2) {
+                    Text(String(alphabet[25 - index]))
+                        .font(.system(size: 22, weight: .bold, design: .monospaced))
+                        .foregroundColor(.cryptoPurple)
+                }
+                .padding(.horizontal, 6)
+                .padding(.vertical, 4)
+                .background(Color.cryptoPurple.opacity(0.1))
+                .cornerRadius(4)
+            } else if cipherType == .vigenere {
+                // Vigenère: Show 0-based Index (0-25)
+                HStack(spacing: 6) {
+                    Text(String(format: "%02d", index))
+                        .font(.system(size: 13, weight: .bold, design: .monospaced))
+                        .foregroundColor(.cryptoPurple)
+                }
+                .padding(.horizontal, 6)
+                .padding(.vertical, 2)
+                .background(Color.cryptoPurple.opacity(0.1))
+                .cornerRadius(4)
+            } else {
+                // Standard: Show Indices
+                HStack(spacing: 6) {
+                    Text(String(format: "%02d", index + 1))
+                        .font(.system(size: 13, weight: .bold, design: .monospaced))
+                        .foregroundColor(.cryptoPurple)
+                    
+                    Text(String(format: "%02d", 26 - index))
+                        .font(.system(size: 11, weight: .medium, design: .monospaced))
+                        .foregroundColor(.cryptoSubtext.opacity(0.6))
+                }
+                .padding(.horizontal, 6)
+                .padding(.vertical, 2)
+                .background(Color.cryptoPurple.opacity(0.1))
+                .cornerRadius(4)
+            }
+        }
+        .frame(maxWidth: .infinity)
+        .padding(.vertical, 12)
+        .background(Color.white.opacity(0.9))
+        .cornerRadius(12)
+        .shadow(color: Color.black.opacity(0.03), radius: 3, x: 0, y: 1)
     }
 }
